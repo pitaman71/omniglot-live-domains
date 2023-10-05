@@ -1,27 +1,32 @@
+import * as Base from './Base';
 import faker from 'faker';
 import { Domain } from '@pitaman71/omniglot-introspect';
 
-export const TheURLDomain = new class extends Domain<URL> {
+interface _URL {
+    url?: URL
+}
+
+export const URLDomain = new class extends Domain<Base.Parseable & _URL> {
     asString() {
         return new class {
-            from(text: string) { 
-                return new URL(text)
+            from(text: string): Base.Parseable & _URL { 
+                return { text, url: new URL(text) }
             }
-            to(value: URL) { return value.toString() }
+            to(value: Base.Parseable & _URL) { return value.url?.toString() || value.text || "" }
         }
     }
     asEnumeration() {
-        return undefined
+        return undefined;
     }
     asColumns() { return undefined; }
 
-    cmp(a: URL, b:URL) { return a < b ? -1 : a > b ? +1 : 0 }
+    cmp(a: _URL, b:_URL) { return a < b ? -1 : a > b ? +1 : 0 }
 }
 
 export function PickURL() {
-    return new URL(faker.internet.url());
+    return URLDomain.asString().from(faker.internet.url());
 }
 
 export function PickEmail() {
-    return faker.internet.email();
+    return URLDomain.asString().from(faker.internet.email());
 }

@@ -1,4 +1,5 @@
 import * as Elevated from '@pitaman71/omniglot-introspect';
+import * as Base from './Base';
 
 export type ServiceNames = 'com.linkedin'|'com.facebook'|'com.instagram';
 export interface _Account {
@@ -6,12 +7,7 @@ export interface _Account {
     handle?: string;
 }
 
-export interface _Parseable {
-    text?: string;
-    error?: any;
-}
-
-export const AccountDomain = new class _AccountDomain extends Elevated.Domain<_Parseable & _Account> {
+export const AccountDomain = new class _AccountDomain extends Elevated.Domain<Base.Parseable & _Account> {
     asString(format?: string) { 
         return {
             from(text: string) { 
@@ -38,12 +34,12 @@ export const AccountDomain = new class _AccountDomain extends Elevated.Domain<_P
                 }
                 return { service, handle, text }
             },
-            to(value: _Parseable & _Account) { return value.text || "" }
+            to(value: Base.Parseable & _Account) { return value.text || "" }
         };
     }
     asEnumeration(maxCount: number) { return undefined }
     asColumns() { return undefined }
-    cmp(a: _Parseable & _Account, b: _Parseable & _Account) {
+    cmp(a: Base.Parseable & _Account, b: Base.Parseable & _Account) {
         return undefined;
     }
 };

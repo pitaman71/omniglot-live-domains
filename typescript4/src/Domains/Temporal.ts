@@ -1,6 +1,7 @@
 import * as Luxon from 'luxon';
 import * as tzdata from 'tzdata';
 import * as Elevated from '@pitaman71/omniglot-introspect';
+import * as Base from './Base';
 
 export const __moduleName__ = "omniglot-live-data.Domains.Temporal";
 
@@ -28,21 +29,16 @@ function _cmp<DataType>(a: DataType|undefined, b:DataType|undefined): -1 | 0 | 1
     return (a < b) ? -1 : (a > b) ? +1 : 0;
 }
 
-interface _Parseable {
-    text?: string;
-    error?: any;
-}
-
-export interface _Date extends _Parseable {
+export interface _Date {
     year?: number;
     month?: number;
     day?: number;
     luxon?: Luxon.DateTime;
 }
 
-export const DateDomain = new class _DateDomain extends Elevated.Domain<_Date> {
+export const DateDomain = new class _DateDomain extends Elevated.Domain<Base.Parseable & _Date> {
     asString(format?: string) { return new class {
-        from(text: string): _Date {
+        from(text: string): Base.Parseable & _Date {
             const luxon = Luxon.DateTime.fromISO(text);
             if(!luxon.isValid) {
                 return {
@@ -58,7 +54,7 @@ export const DateDomain = new class _DateDomain extends Elevated.Domain<_Date> {
                 }
             }
         }
-        to(value: _Date): string {
+        to(value: Base.Parseable & _Date): string {
             if(value.text !== undefined) {
                 return value.text;
             }
@@ -86,8 +82,8 @@ export const DateDomain = new class _DateDomain extends Elevated.Domain<_Date> {
         return 0;
     }
 
-    toJSDate(value: _Date) { return value.luxon?.toJSDate() }
-    toISOString(value: _Date) { return value.luxon?.toISODate() }
+    toJSDate(value: Base.Parseable & _Date) { return value.luxon?.toJSDate() }
+    toISOString(value: Base.Parseable & _Date) { return value.luxon?.toISODate() }
 
     fromBlank() { return {} }
     fromLuxon(luxon: Luxon.DateTime) { 
@@ -102,7 +98,7 @@ export const DateDomain = new class _DateDomain extends Elevated.Domain<_Date> {
     
     fromISOString(text: string) { return this.fromLuxon(Luxon.DateTime.fromISO(text))}
     fromJSDate(date: globalThis.Date) { return this.fromLuxon(Luxon.DateTime.fromJSDate(date))}
-    fromMerge(head: _Date, ...dates: _Date[]): _Date {
+    fromMerge(head: Base.Parseable & _Date, ...dates: Base.Parseable & _Date[]): Base.Parseable & _Date {
         if(dates.length === 0) return { 
             text: head.text,
             year: head.year,
@@ -121,7 +117,7 @@ export const DateDomain = new class _DateDomain extends Elevated.Domain<_Date> {
     }
 }
 
-export interface _Zone extends _Parseable {
+export interface _Zone {
     luxon?: Luxon.Zone;
     name?: string;
     short?: string;
@@ -129,12 +125,12 @@ export interface _Zone extends _Parseable {
     minutes?: number;
 }
 
-export const ZoneDomain = new class _ZoneDomain extends Elevated.Domain<_Zone> {
+export const ZoneDomain = new class _ZoneDomain extends Elevated.Domain<Base.Parseable & _Zone> {
     asString(format?: string) { 
         const domain = this;
         return new class {
-            from(text: string): _Zone { return domain.getByName(text) }
-            to(value: _Zone): string { return value.name || '' }
+            from(text: string): Base.Parseable & _Zone { return domain.getByName(text) }
+            to(value: Base.Parseable & _Zone): string { return value.name || '' }
         };
     }
     asEnumeration(maxCount: number){ 
@@ -142,13 +138,13 @@ export const ZoneDomain = new class _ZoneDomain extends Elevated.Domain<_Zone> {
         const luxons = tzNames.map(tzName => Luxon.DateTime.local({ zone: tzName }));
         const domain = this;
         return new class {
-            *forward(): Generator<_Zone> {
+            *forward(): Generator<Base.Parseable & _Zone> {
                 luxons.sort((a,b) => a.offset < b.offset ? -1 : a.offset > b.offset ? +1 : 0);
                 for(let luxon of luxons) {
                     yield domain.fromLuxon(luxon)
                 }
             }
-            *backward(): Generator<_Zone> {
+            *backward(): Generator<Base.Parseable & _Zone> {
                 luxons.sort((a,b) => a.offset > b.offset ? -1 : a.offset < b.offset ? +1 : 0);
                 for(let luxon of luxons) {
                     yield domain.fromLuxon(luxon)
@@ -169,7 +165,7 @@ export const ZoneDomain = new class _ZoneDomain extends Elevated.Domain<_Zone> {
     getLocal() {
         return this.fromLuxon(Luxon.DateTime.local());
     }
-    getByName(name: string): _Zone {
+    getByName(name: string): Base.Parseable & _Zone {
         const luxon = Luxon.DateTime.local({ zone: name });
         return {
             name: luxon.zoneName,
@@ -179,7 +175,7 @@ export const ZoneDomain = new class _ZoneDomain extends Elevated.Domain<_Zone> {
             luxon: luxon.zone
         }
     }
-    fromLuxon(luxon: Luxon.DateTime) {
+    fromLuxon(luxon: Luxon.DateTime): Base.Parseable & _Zone {
         return {
             name: luxon.zoneName,
             minutes: luxon.offset,
@@ -195,7 +191,7 @@ export const AllZones = new Elevated.Samples<_Zone>(
     ...tzNames.map(tzName => ZoneDomain.getByName(tzName)) 
 );
 
-export interface _Time extends _Parseable {
+export interface _Time {
     hour?: number;
     minute?: number;
     second?: number;
@@ -203,10 +199,10 @@ export interface _Time extends _Parseable {
     zone?: _Zone;
 }
 
-export const TimeDomain = new class _Domain extends Elevated.Domain<_Time> {
+export const TimeDomain = new class _Domain extends Elevated.Domain<Base.Parseable & _Time> {
     asString() {
         return new class {
-            from(text: string): _Time { 
+            from(text: string): Base.Parseable & _Time { 
                 let hour = 0;
                 let minute = 0;
                 let second: number|undefined;
@@ -227,7 +223,7 @@ export const TimeDomain = new class _Domain extends Elevated.Domain<_Time> {
                 }
                 return { text, error, hour, minute, second, pm, zone };
             }
-            to(value: _Time): string {
+            to(value: Base.Parseable & _Time): string {
                 if(value.text !== undefined) return value.text;
                 const hour = value.hour;
                 const minute = value.minute;
@@ -264,7 +260,7 @@ export const TimeDomain = new class _Domain extends Elevated.Domain<_Time> {
         return _cmp(a,b);
     }
 
-    toSeconds(value: _Time) {
+    toSeconds(value: Base.Parseable & _Time) {
         if(value.hour === undefined || value.minute === undefined)
             return undefined;
         let seconds = 0;
@@ -278,7 +274,7 @@ export const TimeDomain = new class _Domain extends Elevated.Domain<_Time> {
         }
         return seconds;
     }   
-    fromBlank(): _Time {
+    fromBlank(): Base.Parseable & _Time {
         return {}
     }
     fromSeconds(seconds: number, pm?: boolean, utcOffset?: { hours: number, minutes: number, west: boolean }) {
@@ -290,7 +286,7 @@ export const TimeDomain = new class _Domain extends Elevated.Domain<_Time> {
             utcOffset 
         }
     }
-    fromMerge(head: _Time, ...times: _Time[]): _Time {
+    fromMerge(head: Base.Parseable & _Time, ...times: Base.Parseable & _Time[]): Base.Parseable & _Time {
         if(times.length === 0) return { 
             text: head.text,
             hour: head.hour,
@@ -315,20 +311,20 @@ export const TimeDomain = new class _Domain extends Elevated.Domain<_Time> {
     }
 }
 
-export interface _DateTime extends _Parseable {
+export interface _DateTime {
     luxon?: luxon.DateTime;
     date: _Date;
     time: _Time;
 }
 
-export const DateTimeDomain = new class _DateTimeDomain extends Elevated.Domain<_DateTime> {
+export const DateTimeDomain = new class _DateTimeDomain extends Elevated.Domain<Base.Parseable & _DateTime> {
     asString(format?: string) {
         const domain = this;
         return new class {
-            from(text: string): _DateTime {
+            from(text: string): Base.Parseable & _DateTime {
                 return domain.fromISOString(text);
             }
-            to(value: _DateTime) { 
+            to(value: Base.Parseable & _DateTime) { 
                 if(value.luxon) {
                     return value.luxon.toISO();
                 } else if(value.text !== undefined) {
@@ -357,7 +353,7 @@ export const DateTimeDomain = new class _DateTimeDomain extends Elevated.Domain<
         return 0;
     }
 
-    from(date: _Date, time: _Time): _DateTime {
+    from(date: Base.Parseable & _Date, time: Base.Parseable & _Time): Base.Parseable & _DateTime {
         let text: string|undefined;
         let luxon: Luxon.DateTime|undefined;
         let error: any;
@@ -388,7 +384,7 @@ export const DateTimeDomain = new class _DateTimeDomain extends Elevated.Domain<
             time: TimeDomain.fromBlank()
         };
     }
-    fromLuxon(luxon: Luxon.DateTime): _DateTime { 
+    fromLuxon(luxon: Luxon.DateTime): Base.Parseable & _DateTime { 
         return { 
             text: luxon.isValid ? luxon.toISO() : undefined,
             error: !luxon.isValid && [ luxon.invalidReason, luxon.invalidExplanation ],
@@ -396,13 +392,13 @@ export const DateTimeDomain = new class _DateTimeDomain extends Elevated.Domain<
             time: { hour: luxon.hour, minute: luxon.minute, second: luxon.second }
         };
     }
-    fromISOString(text: string): _DateTime {
+    fromISOString(text: string): Base.Parseable & _DateTime {
         return this.fromLuxon(Luxon.DateTime.fromISO(text));
     }
-    fromJSDate(date: any): _DateTime {
+    fromJSDate(date: any): Base.Parseable & _DateTime {
         return this.fromLuxon(Luxon.DateTime.fromJSDate(date));
     }
-    fromMerge(head: _DateTime, ...moments: _DateTime[]): _DateTime {
+    fromMerge(head: Base.Parseable & _DateTime, ...moments: Base.Parseable & _DateTime[]): Base.Parseable & _DateTime {
         return this.from(
             DateDomain.fromMerge(head.date, ...moments.map(moment => moment.date)),
             TimeDomain.fromMerge(head.time, ...moments.map(moment => moment.time))
@@ -410,16 +406,16 @@ export const DateTimeDomain = new class _DateTimeDomain extends Elevated.Domain<
     }
 }
 
-export interface _Duration extends _Parseable {
+export interface _Duration {
     days?: number,
     hours?: number,
     minutes?: number,
     seconds?: number
 }
 
-export const DurationDomain = new class _DurationDomain extends Elevated.Domain<_Duration> {   
+export const DurationDomain = new class _DurationDomain extends Elevated.Domain<Base.Parseable & _Duration> {   
     asString(format?: string) { return new class {
-        from(text: string): _Duration {
+        from(text: string): Base.Parseable & _Duration {
             const parsed = text.match(/^((\d+)d)?((\d+)h)?((\d+)m)?((\d+)s)?/i);
             let error: any;
             let days: number|undefined;
@@ -439,7 +435,7 @@ export const DurationDomain = new class _DurationDomain extends Elevated.Domain<
             }
             return { text, error, days, hours, minutes, seconds };
         }
-        to(value: _Duration): string {
+        to(value: Base.Parseable & _Duration): string {
             return value.text || [
                 value.days === undefined ? '' : `${value.days.toString()}d`,
                 value.hours === undefined ? '' : `${value.hours.toString()}h`,
@@ -457,10 +453,10 @@ export const DurationDomain = new class _DurationDomain extends Elevated.Domain<
     cmp(a: _Duration, b:_Duration): undefined|-1|0|1 {
         return _cmp(this.toSeconds(a), this.toSeconds(b))
     }
-    toLuxon(duration: _Duration): Luxon.Duration {
+    toLuxon(duration: Base.Parseable & _Duration): Luxon.Duration {
         return Luxon.Duration.fromObject(duration);
     }
-    toSeconds(duration: _Duration): number {
+    toSeconds(duration: Base.Parseable & _Duration): number {
         return (duration.seconds || 0) +
             (duration.minutes ? 60 * duration.minutes : 0) +
             (duration.hours ? 3600 * duration.hours : 0) + 
@@ -476,16 +472,16 @@ export const DurationDomain = new class _DurationDomain extends Elevated.Domain<
     }
 }
 
-export interface _Interval extends _Parseable {
+export interface _Interval {
     luxon?: Luxon.Interval,
     start?: _DateTime,
     end?: _DateTime,
     duration?: _Duration
 }
 
-export const IntervalDomain = new class _IntervalDomain extends Elevated.Domain<_Interval> {
+export const IntervalDomain = new class _IntervalDomain extends Elevated.Domain<Base.Parseable & _Interval> {
     asString(format?: string) { return new class {
-        from(text: string): _Interval {
+        from(text: string): Base.Parseable & _Interval {
             let error: any;
             let luxon: Luxon.Interval|undefined;
             luxon = Luxon.Interval.fromISO(text);
@@ -495,7 +491,7 @@ export const IntervalDomain = new class _IntervalDomain extends Elevated.Domain<
             }
             return { text, error }
         }
-        to(value: _Interval): string {
+        to(value: Base.Parseable & _Interval): string {
             if(value.luxon) {
                 return value.luxon.toISO();
             } else if(value.text !== undefined) {
@@ -528,7 +524,7 @@ export const IntervalDomain = new class _IntervalDomain extends Elevated.Domain<
         return code;    
     }
 
-    toISOString(interval: _Interval) { return interval.luxon?.toISO() }
+    toISOString(interval: Base.Parseable & _Interval) { return interval.luxon?.toISO() }
 
     from(start: _DateTime, end?: _DateTime, duration?: _Duration) {
         let text: string|undefined;
@@ -562,7 +558,7 @@ export const IntervalDomain = new class _IntervalDomain extends Elevated.Domain<
     }
 }
 
-export function Appointments(): _Interval { 
+export function Appointments(): Base.Parseable & _Interval { 
     const now = Luxon.DateTime.now();
     const days = Math.floor(Math.random() * 30);
     const when = now.plus({ days });

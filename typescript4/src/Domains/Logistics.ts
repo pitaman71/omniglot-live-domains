@@ -1,4 +1,5 @@
 import * as Elevated from '@pitaman71/omniglot-introspect';
+import * as Base from './Base';
 
 interface _GeoPoint {
     asString?: { lat: string, lng: string }, 
@@ -40,21 +41,16 @@ export interface _Event {
     when?: _When;
 }
 
-export interface _Parseable {
-    text?: string;
-    error?: any;
-}
-
-export const EventDomain = new class _EventDomain extends Elevated.Domain<_Parseable & _Event> {
+export const EventDomain = new class _EventDomain extends Elevated.Domain<Base.Parseable & _Event> {
     asString(format?: string) { 
         return {
             from(text: string) { return { text } },
-            to(value: _Parseable & _Event) { return value.text || "" }
+            to(value: Base.Parseable & _Event) { return value.text || "" }
         };
     }
     asEnumeration(maxCount: number) { return undefined }
     asColumns() { return undefined }
-    cmp(a: _Parseable & _Event, b: _Parseable & _Event) {
+    cmp(a: Base.Parseable & _Event, b: Base.Parseable & _Event) {
         return undefined;
     }
 };
