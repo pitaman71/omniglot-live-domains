@@ -2,7 +2,7 @@ import * as Base from './Base';
 import faker from 'faker';
 import { Domain } from '@pitaman71/omniglot-introspect';
 
-interface _URL {
+export interface _URL {
     url?: URL
 }
 

@@ -13,14 +13,14 @@ export const directory = new Definitions.Directory();
 export namespace HasURL {
     export type TypeParams = {
         Binding: { the: Objects.Binding<string> },
-        Value: URL,
-        Domain: Elevated.Domain<URL>
+        Value: Domains.Base.Parseable & Domains.Internet._URL,
+        Domain: Elevated.Domain<Domains.Base.Parseable & Domains.Internet._URL>
     }
     export const Descriptor = new class _Descriptor extends Properties.Descriptor<TypeParams> {
         canonicalName = `${moduleName}.HasURL`
         build(builder: Properties.Builder<TypeParams>): void {
             builder.object('the');
-            builder.measure(Domains.Internet.TheURLDomain);
+            builder.measure(Domains.Internet.URLDomain);
             builder.scalar();
         }
     }

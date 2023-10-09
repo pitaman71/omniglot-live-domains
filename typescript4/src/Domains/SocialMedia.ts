@@ -13,8 +13,15 @@ export const AccountDomain = new class _AccountDomain extends Elevated.Domain<Ba
             from(text: string) { 
                 let service: undefined|ServiceNames = undefined;
                 let handle:  undefined|string = undefined;
-                const regex = new RegExp(/((instagram):\s*(\S+)|(ig):\s*(\S+)|(facebook):\s*(\S+)|(fb):\s*(\S+)|(linkedin):\s*(\S+)|(li):\s*(\S+))/);
-                const match = regex.exec(text);
+                let error:string|undefined = undefined;
+                const match = 
+                    /(instagram):\s*(\S+)/.exec(text) ||
+                    /(ig):\s*(\S+)/.exec(text) ||
+                    /(facebook):\s*(\S+)/.exec(text) ||
+                    /(fb):\s*(\S+)/.exec(text) ||
+                    /(linkedin):\s*(\S+)/.exec(text) ||
+                    /(li):\s*(\S+)/.exec(text);
+
                 if(match && match[1] && match[2]) {
                     switch(match[1].toLowerCase()) {
                         case 'instagram':
@@ -29,10 +36,13 @@ export const AccountDomain = new class _AccountDomain extends Elevated.Domain<Ba
                         case 'li':
                             service = 'com.linkedin';
                             break;
+                        default:
+                            error = `Expected format is ig:handle or fb:handle or li:handle`;
+                            break;
                     }
                     handle = match[2].replace('^\@', match[2]);
                 }
-                return { service, handle, text }
+                return { service, handle, text, error }
             },
             to(value: Base.Parseable & _Account) { return value.text || "" }
         };
