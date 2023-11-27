@@ -78,6 +78,18 @@ export interface _When {
 }
 
 export const WhenDomain = new class _EventDomain extends Elevated.Domain<Base.Parseable & _When> {
+    asRange() {
+        return {
+            from(text_: { from: string, to: string }): Base.Parseable & _When { 
+                const from = { iso8601: new Date(text_.from).toISOString() };
+                const to = { iso8601: new Date(text_.to).toISOString() };
+                const text = `${new Date(from.iso8601).toLocaleDateString()} - ${new Date(to.iso8601).toLocaleDateString()}`;
+                const error = new Date(from.iso8601) <= new Date(to.iso8601) ? undefined : `Date range: 'from' date must occur before 'to' date`;
+                return { text, error, from, to };
+            },
+            to(value: Base.Parseable & _When) { return { from: value.from?.iso8601, to: value.to?.iso8601 } }
+        };
+    }
     asString(format?: string) { 
         return {
             from(text: string): Base.Parseable & _When { return { text } },
