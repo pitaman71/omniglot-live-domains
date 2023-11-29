@@ -16,7 +16,7 @@ export namespace ImageFormat {
         durationSeconds: number
     };
     export type TypeParams = {
-        Binding: { asset: Objects.Binding<string> },
+        Binding: { asset: Objects.Binding<string|object> },
         Value: Data,
         Domain: Elevated.Domain<Data>
     }
@@ -46,7 +46,7 @@ export namespace ImageData {
     }
 
     export type TypeParams = {
-        Binding: { asset: Objects.Binding<string> },
+        Binding: { asset: Objects.Binding<string|object> },
         Value: Data,
         Domain: Elevated.Domain<Data>
     }
@@ -123,7 +123,7 @@ export namespace ImageData {
 export namespace ManageAsset {
     export type TypeParams = {
         Binding: {
-            asset: Objects.Binding<string>
+            asset: Objects.Binding<string|object>
         },
         State: {},
         Direction: void,

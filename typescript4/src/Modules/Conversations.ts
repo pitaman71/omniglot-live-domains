@@ -10,8 +10,8 @@ export const directory = new Definitions.Directory();
 
 export namespace CommentHasAuthor {
     export type BindingType = {
-        comment: Objects.Binding<string>,
-        author: Objects.Binding<string>
+        comment: Objects.Binding<string|object>,
+        author: Objects.Binding<string|object>
     }
 
     export const Descriptor = new class _Descriptor extends Relations.Descriptor<BindingType> {
@@ -27,8 +27,8 @@ export namespace CommentHasAuthor {
 
 export namespace CommentHasSubject {
     export type BindingType = {
-        comment: Objects.Binding<string>,
-        subject: Objects.Binding<string>
+        comment: Objects.Binding<string|object>,
+        subject: Objects.Binding<string|object>
     }
 
     export const Descriptor = new class _Descriptor extends Relations.Descriptor<BindingType> {
@@ -44,8 +44,8 @@ export namespace CommentHasSubject {
 
 export namespace SubjectHasComment {
     export type BindingType = {
-        subject: Objects.Binding<string>,
-        comment: Objects.Binding<string>
+        subject: Objects.Binding<string|object>,
+        comment: Objects.Binding<string|object>
     }
 
     export const Descriptor = new class _Descriptor extends Relations.Descriptor<BindingType> {
@@ -66,7 +66,7 @@ export namespace Comment {
     };
     export type TypeParams = {
         Binding: { 
-            comment: Objects.Binding<string>
+            comment: Objects.Binding<string|object>
         },
         Value: Data,
         Domain: Elevated.Domain<Data>

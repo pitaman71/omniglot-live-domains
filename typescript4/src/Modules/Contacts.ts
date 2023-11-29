@@ -8,7 +8,7 @@ export const directory = new Definitions.Directory();
 export namespace Email {
     export interface Data { address?: string };
     export type TypeParams = {
-        Binding: { person: Objects.Binding<string> },
+        Binding: { person: Objects.Binding<string|object> },
         Value: Data,
         Domain: Elevated.Domain<Data>
     }

@@ -10,7 +10,7 @@ export const directory = new Definitions.Directory();
 
 export namespace Handle {
     export type TypeParams = { 
-        Binding: { profiled: Objects.Binding<string> },
+        Binding: { profiled: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     };
@@ -27,7 +27,7 @@ export namespace Handle {
 
 export namespace Title {
     export type TypeParams = { 
-        Binding: { profiled: Objects.Binding<string> },
+        Binding: { profiled: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     };
@@ -44,7 +44,7 @@ export namespace Title {
 
 export namespace Description {
     export type TypeParams = { 
-        Binding: { profiled: Objects.Binding<string> },
+        Binding: { profiled: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     };
@@ -61,7 +61,7 @@ export namespace Description {
 
 export namespace ToProfilePhoto {
     export interface BindingType extends Objects.BindingType {
-        person: Objects.Binding<string>, image: Objects.Binding<string>
+        person: Objects.Binding<string|object>, image: Objects.Binding<string|object>
     }
     export const Descriptor = new class _Descriptor extends Relations.Descriptor<BindingType> {
         canonicalName = `${__moduleName__}.ToProfilePhoto`
@@ -75,7 +75,7 @@ export namespace ToProfilePhoto {
 }
 
 export namespace ToMyBiography {
-    export interface BindingType extends Objects.BindingType { person: Objects.Binding<string>, document: Objects.Binding<string> }
+    export interface BindingType extends Objects.BindingType { person: Objects.Binding<string|object>, document: Objects.Binding<string|object> }
     export const Descriptor = new class _Descriptor extends Relations.Descriptor<BindingType> {
         canonicalName = `${__moduleName__}.ToMyBiography`
         build(builder: Relations.Builder<BindingType>): void {
@@ -152,7 +152,7 @@ export namespace Why {
 export namespace SetupYourProfile {
     type TypeParams = {
         Binding: {
-            me: Objects.Binding<string>
+            me: Objects.Binding<string|object>
         },
         State: {},
         Direction: void,

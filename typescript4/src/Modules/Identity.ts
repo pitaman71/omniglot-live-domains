@@ -10,7 +10,7 @@ export const directory = new Definitions.Directory();
 export namespace PersonName {
     interface Data { familyName?: string, givenName?: string };
     export type TypeParams = {
-        Binding: { person: Objects.Binding<string> },
+        Binding: { person: Objects.Binding<string|object> },
         Value: Data,
         Domain: Elevated.Domain<Data>
     }
@@ -31,7 +31,7 @@ export namespace PersonName {
 
 export namespace BirthDate {
     export type TypeParams = {
-        Binding: { person: Objects.Binding<string> },
+        Binding: { person: Objects.Binding<string|object> },
         Value: Temporal._Date,
         Domain: Elevated.Domain<Temporal._Date>
     } 
@@ -48,7 +48,7 @@ export namespace BirthDate {
 
 export namespace BirthGender {
     export type TypeParams = {
-        Binding: { person: Objects.Binding<string> },
+        Binding: { person: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     };
@@ -106,7 +106,7 @@ export namespace Why {
 export namespace IntroduceYourself {
     type TypeParams = {
         Binding: {
-            me: Objects.Binding<string>
+            me: Objects.Binding<string|object>
         },
         State: {},
         Direction: void,

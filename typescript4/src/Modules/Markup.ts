@@ -12,7 +12,7 @@ export const directory = new Definitions.Directory();
 
 export namespace HasURL {
     export type TypeParams = {
-        Binding: { the: Objects.Binding<string> },
+        Binding: { the: Objects.Binding<string|object> },
         Value: Domains.Base.Parseable & Domains.Internet._URL,
         Domain: Elevated.Domain<Domains.Base.Parseable & Domains.Internet._URL>
     }
@@ -29,7 +29,7 @@ export namespace HasURL {
 
 export namespace HasKey {
     export type TypeParams = {
-        Binding: { the: Objects.Binding<string> },
+        Binding: { the: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     }
@@ -47,7 +47,7 @@ export namespace HasKey {
 
 export namespace HasLabel {
     export type TypeParams = {
-        Binding: { the: Objects.Binding<string> },
+        Binding: { the: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     }
@@ -65,11 +65,11 @@ export namespace HasLabel {
 
 export namespace HasDescription {
     export type TypeParams = {
-        Binding: { the: Objects.Binding<string> },
+        Binding: { the: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     }
-    export const Descriptor = new class _Descriptor<BindingType extends { the: Objects.Binding<string> }> extends Properties.Descriptor<TypeParams> {
+    export const Descriptor = new class _Descriptor<BindingType extends { the: Objects.Binding<string|object> }> extends Properties.Descriptor<TypeParams> {
         canonicalName = `${moduleName}.HasDescription`
         build(builder: Properties.Builder<TypeParams>): void {
             builder.object('the');
@@ -83,7 +83,7 @@ export namespace HasDescription {
 
 export namespace HasBody {
     export type TypeParams = {
-        Binding: { the: Objects.Binding<string> },
+        Binding: { the: Objects.Binding<string|object> },
         Value: string,
         Domain: Elevated.Domain<string>
     }
@@ -100,7 +100,7 @@ export namespace HasBody {
 } 
 
 export namespace HasContents {
-    interface BindingType extends Objects.BindingType { the: Objects.Binding<string>, contents: Objects.Binding<string> };
+    interface BindingType extends Objects.BindingType { the: Objects.Binding<string|object>, contents: Objects.Binding<string|object> };
     export const Descriptor = new class _Descriptor extends Relations.Descriptor<BindingType> {
         canonicalName = `${moduleName}.HasContents`
         build(builder: Relations.Builder<BindingType>): void {
@@ -113,7 +113,7 @@ export namespace HasContents {
 } 
 
 // export namespace ViewDocument {
-//     interface BindingType extends Objects.BindingType { document: Objects.Binding<string> };
+//     interface BindingType extends Objects.BindingType { document: Objects.Binding<string|object> };
 //     export const Descriptor = new class _Descriptor extends Views.Descriptor<BindingType> {
 //         canonicalName = `${__moduleName__}.Document`
 //         build(builder: Views.Builder<BindingType>) {
@@ -129,7 +129,7 @@ export namespace HasContents {
 // }
 
 // export namespace ViewSection {
-//     interface BindingType extends Objects.BindingType { section: Objects.Binding<string> };
+//     interface BindingType extends Objects.BindingType { section: Objects.Binding<string|object> };
 //     const Descriptor = new class _Descriptor extends Views.Descriptor<BindingType> {
 //         canonicalName = `${__moduleName__}.Section`
 //         build(builder: Views.Builder<BindingType>) {
@@ -146,7 +146,7 @@ export namespace HasContents {
 // }
 
 // export namespace ViewParagraph {
-//     interface BindingType extends Objects.BindingType { paragraph: Objects.Binding<string> };
+//     interface BindingType extends Objects.BindingType { paragraph: Objects.Binding<string|object> };
 //     const Descriptor = new class _Descriptor extends Views.Descriptor<BindingType> {
 //         canonicalName = `${__moduleName__}.Paragraph`
 //         build(builder: Views.Builder<BindingType>) {
@@ -161,7 +161,7 @@ export namespace HasContents {
 // }
 
 // export namespace ViewText {
-//     interface BindingType extends Objects.BindingType { text: Objects.Binding<string> };
+//     interface BindingType extends Objects.BindingType { text: Objects.Binding<string|object> };
 //     export const Descriptor = new class _Descriptor extends Views.Descriptor<BindingType> {
 //         canonicalName = `${__moduleName__}.Text`
 //         build(builder: Views.Builder<BindingType>) {

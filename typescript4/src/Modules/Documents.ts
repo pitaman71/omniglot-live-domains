@@ -11,7 +11,7 @@ export namespace Title {
     const __className__ = `${__moduleName__}.Title`;
     interface Data { title?: string };
     export type TypeParams = {
-        Binding: { document: Objects.Binding<string> },
+        Binding: { document: Objects.Binding<string|object> },
         Value: Data,
         Domain: Elevated.Domain<Data>
     }
@@ -32,8 +32,8 @@ export namespace Title {
 export namespace Description {
     const __className__ = `${__moduleName__}.Description`;
     export interface BindingType extends Objects.BindingType {
-        document: Objects.Binding<string>,
-        markup: Objects.Binding<string>
+        document: Objects.Binding<string|object>,
+        markup: Objects.Binding<string|object>
     }
     export class Descriptor {
         canonicalName: string = __className__;
@@ -48,8 +48,8 @@ export namespace Description {
 export namespace Body {
     const __className__ = `${__moduleName__}.Body`;
     export interface BindingType extends Objects.BindingType {
-        document: Objects.Binding<string>,
-        markup: Objects.Binding<string>
+        document: Objects.Binding<string|object>,
+        markup: Objects.Binding<string|object>
     }
     export class Descriptor {
         canonicalName: string = __className__;
