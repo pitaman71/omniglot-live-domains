@@ -204,6 +204,16 @@ export const WhenDomain = new class _EventDomain extends Elevated.Domain<Base.Pa
     cmp(a: Base.Parseable & _When, b: Base.Parseable & _When) {
         return undefined;
     }
+    expand(a: Base.Parseable & _When, b: Base.Parseable & _When) {
+        return (
+            a.dates === undefined ? b : b.dates === undefined ? a : 
+            DateDomain.cmp(b.dates.from, a.dates.from) >= 0 && DateDomain.cmp(b.dates.to, a.dates.to) <= 0 ? a :
+            DateDomain.cmp(a.dates.from, b.dates.from) >= 0 && DateDomain.cmp(a.dates.to, b.dates.to) <= 0 ? b : this.asDates().from({
+                from : DateDomain.cmp(a.dates.from, b.dates.from) <= 0 ? a.dates.from.iso8601 : b.dates.from.iso8601,
+                to : DateDomain.cmp(a.dates.to, b.dates.to) >= 0 ? a.dates.to.iso8601 : b.dates.to.iso8601
+            })
+        );
+    }
 };
 
 export interface _Event {
