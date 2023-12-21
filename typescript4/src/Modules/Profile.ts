@@ -182,11 +182,12 @@ export namespace SetupYourProfile {
             const avatarImage = builder.streams().relation(ToProfilePhoto.Descriptor.bindAnchor({ person: builder.instance().binding.me }));
             const biography = builder.streams().relation(ToMyBiography.Descriptor.bindAnchor({ person: builder.instance().binding.me }));
 
-            const isBlank = Operations.Eval(Values.TheBooleanDomain, ({ personName, handle, avatarImage, biography }) => personName === undefined && handle === undefined && avatarImage === undefined && biography === undefined, 
+            const isBlank = Operations.Eval('Profile.ts:185', Values.TheBooleanDomain, ({ personName, handle, avatarImage, biography }) => personName === undefined && handle === undefined && avatarImage === undefined && biography === undefined, 
                 { 
                     personName: personName.scalar, 
                     handle: handle.scalar, 
                     avatarImage: Operations.Reduce(
+                            'Profile.ts:190',
                             avatarImage, 
                             () => 0, 
                             (_accum, value_) => _accum + 1, 
@@ -194,6 +195,7 @@ export namespace SetupYourProfile {
                             Values.Count
                         ),
                     biography: Operations.Reduce(
+                            'Profile.ts:198',
                             biography,
                             () => 0, 
                             (_accum, value_) => _accum + 1, 
@@ -202,11 +204,14 @@ export namespace SetupYourProfile {
                         )
                 }
             );
-            const isComplete = Operations.Eval(Values.TheBooleanDomain, ({ personName, handle, avatarImage, biography }) => personName !== undefined && handle !== undefined && avatarImage !== undefined && biography !== undefined, 
+            const isComplete = Operations.Eval(
+                'Profile.ts:208',
+                Values.TheBooleanDomain, ({ personName, handle, avatarImage, biography }) => personName !== undefined && handle !== undefined && avatarImage !== undefined && biography !== undefined, 
                 { 
                     personName: personName.scalar, 
                     handle: handle.scalar, 
                     avatarImage: Operations.Reduce(
+                            'Profile.ts:212',
                             avatarImage, 
                             () => 0, 
                             (_accum, value_) => _accum + 1, 
@@ -214,6 +219,7 @@ export namespace SetupYourProfile {
                             Values.Count
                         ),
                     biography: Operations.Reduce(
+                            'Profile.ts:220',
                             biography,
                             () => 0, 
                             (_accum, value_) => _accum + 1, 
@@ -222,7 +228,9 @@ export namespace SetupYourProfile {
                         )
                 }
             );
-            const isIncomplete = Operations.Eval(Values.TheBooleanDomain, ({ isBlank, isComplete }) => !isBlank && !isComplete,
+            const isIncomplete = Operations.Eval(
+                'Profile.ts:230',
+                Values.TheBooleanDomain, ({ isBlank, isComplete }) => !isBlank && !isComplete,
                 { 
                     isBlank,
                     isComplete
@@ -234,7 +242,9 @@ export namespace SetupYourProfile {
             );
 
             builder.status({ 
-                scalar: Operations.Eval(StatusDomain, 
+                scalar: Operations.Eval(
+                    'Profile.ts:246',
+                    StatusDomain, 
                     ({a}) => {
                         return a ? 'complete' : 'incomplete'
                     }, 
@@ -286,19 +296,19 @@ export namespace SetupYourProfile {
 
             builder.control({
                 name: 'submit',
-                enable: () => builder.zone().hasChanges(),
+                enable: () => builder.zone().hasChanges('Profile.SetupYourProfile.submit'),
                 action: () => builder.zone().commitAll(),
                 isExit: true
             });
             builder.control({
                 name: 'undo',
-                enable: () => builder.zone().hasChanges(),
+                enable: () => builder.zone().hasChanges('Profile.SetupYourProfile.undo'),
                 action: () => builder.zone().revertAll()
             });
 
             builder.when( new class {
                 name = 'SetupYourProfile.ShowCancelButton';
-                condition() { return builder.zone().hasChanges() }
+                condition() { return builder.zone().hasChanges(this.name) }
                 then(builder: Dialogues.Builder<Dialogues.TypeParams>): void {
                     builder.control({
                         name: 'cancel',
@@ -310,7 +320,7 @@ export namespace SetupYourProfile {
             })
             builder.when( new class {
                 name = 'SetupYourProfile.ShowCloseButton';
-                condition() { return Operations.Eval(Values.TheBooleanDomain, ({ a }) => !a , { a: builder.zone().hasChanges() }) }
+                condition() { return Operations.Eval(this.name, Values.TheBooleanDomain, ({ a }) => !a , { a: builder.zone().hasChanges(this.name) }) }
                 then(builder: Dialogues.Builder<Dialogues.TypeParams>): void {
                     builder.control({
                         name: 'close',

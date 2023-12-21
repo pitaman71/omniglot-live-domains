@@ -158,7 +158,7 @@ export namespace ManageAsset {
 
             builder.when( new class {
                 name = 'ManageAsset.ShowSubmitButton';
-                condition() { return builder.zone().hasChanges() }
+                condition() { return builder.zone().hasChanges(this.name) }
                 then(builder: Dialogues.Builder<Dialogues.TypeParams>): void {
                     builder.control({
                         name: 'submit',
@@ -169,7 +169,7 @@ export namespace ManageAsset {
             })
             builder.when( new class {
                 name = 'ManageAsset.ShowCancelButton';
-                condition() { return builder.zone().hasChanges() }
+                condition() { return builder.zone().hasChanges(this.name) }
                 then(builder: Dialogues.Builder<Dialogues.TypeParams>): void {
                     builder.control({
                         name: 'cancel',
@@ -181,7 +181,7 @@ export namespace ManageAsset {
             })
             builder.when( new class {
                 name = 'ManageAsset.ShowCloseButton';
-                condition() { return Operations.Eval(Values.TheBooleanDomain, ({ a }) => !a , { a: builder.zone().hasChanges() }) }
+                condition() { return Operations.Eval(this.name, Values.TheBooleanDomain, ({ a }) => !a , { a: builder.zone().hasChanges(this.name) }) }
                 then(builder: Dialogues.Builder<Dialogues.TypeParams>): void {
                     builder.control({
                         name: 'close',

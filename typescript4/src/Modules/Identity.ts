@@ -135,7 +135,7 @@ export namespace IntroduceYourself {
             const personName = builder.streams().property(PersonName.Descriptor.bind(binding));
             const birthDate = builder.streams().property(BirthDate.Descriptor.bind(binding));
             const birthGender = builder.streams().property(BirthGender.Descriptor.bind(binding));
-            const isBlank = Operations.Eval(Values.TheBooleanDomain, 
+            const isBlank = Operations.Eval('Identity.IntroduceYourself', Values.TheBooleanDomain, 
                 ({ personName, birthDate, birthGender }) => {
                     return personName === undefined && birthDate === undefined && birthGender === undefined
                 },
@@ -145,7 +145,7 @@ export namespace IntroduceYourself {
                     birthGender: birthGender.scalar
                 }
             );
-            const isComplete = Operations.Eval(Values.TheBooleanDomain, 
+            const isComplete = Operations.Eval('Identity.IntroduceYourself', Values.TheBooleanDomain, 
                 ({ personName, birthDate, birthGender }) => {
                     return personName !== undefined && birthDate !== undefined && birthGender !== undefined
                 },
@@ -155,14 +155,14 @@ export namespace IntroduceYourself {
                     birthGender: birthGender.scalar
                 }
             );
-            const isIncomplete = Operations.Eval(Values.TheBooleanDomain, ({ isBlank, isComplete }) => !isBlank && !isComplete,
+            const isIncomplete = Operations.Eval('Identity.IntroduceYourself', Values.TheBooleanDomain, ({ isBlank, isComplete }) => !isBlank && !isComplete,
                 { 
                     isBlank, isComplete
                 }
             );
 
             builder.status({ 
-                scalar: Operations.Eval(StatusDomain, 
+                scalar: Operations.Eval('Identity.IntroduceYourself', StatusDomain, 
                     ({a}) => {
                         return a ? 'complete' : 'incomplete'
                     }, 
@@ -211,19 +211,19 @@ export namespace IntroduceYourself {
             
             builder.control({
                 name: 'submit',
-                enable: () => builder.zone().hasChanges(),
+                enable: () => builder.zone().hasChanges('Identity.IntroduceYourself'),
                 action: () => builder.zone().commitAll(),
                 isExit: true
             });
             builder.control({
                 name: 'undo',
-                enable: () => builder.zone().hasChanges(),
+                enable: () => builder.zone().hasChanges('Identity.IntroduceYourself'),
                 action: () => builder.zone().revertAll()
             });
 
             builder.when( new class {
                 name = 'IntroduceYourself.ShowCancelButton';
-                condition() { return builder.zone().hasChanges() }
+                condition() { return builder.zone().hasChanges('Identity.IntroduceYourself') }
                 then(builder: Dialogues.Builder<Dialogues.TypeParams>): void {
                     builder.control({
                         name: 'cancel',
@@ -235,7 +235,7 @@ export namespace IntroduceYourself {
             })
             builder.when( new class {
                 name = 'IntroduceYourself.ShowCloseButton';
-                condition() { return Operations.Eval(Values.TheBooleanDomain, ({ anyChanges }) => !anyChanges , { anyChanges: builder.zone().hasChanges() }) }
+                condition() { return Operations.Eval(this.name, Values.TheBooleanDomain, ({ anyChanges }) => !anyChanges , { anyChanges: builder.zone().hasChanges('Identity.IntroduceYourself') }) }
                 then(builder: Dialogues.Builder<Dialogues.TypeParams>): void {
                     builder.control({
                         name: 'close',
