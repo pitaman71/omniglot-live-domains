@@ -59,7 +59,11 @@ export const RadiusDomain = new class _EventDomain extends Elevated.Domain<Base.
                 }
                 return { text, error, sense, miles, kilometers }
             },
-            to(value: Base.Parseable & _Radius) { return value.text || `${value.sense == 'inside' ? '-' : '+'}${value.miles || value.kilometers}${!!value.miles ? 'mi' : !!value.kilometers ? 'km' : ''}`}
+            to(value: Base.Parseable & _Radius) { 
+                if(value.text !== undefined) return value.text; 
+                if(value.miles === undefined && value.kilometers === undefined) return "";
+                return `${value.sense == 'inside' ? '-' : '+'}${value.miles || value.kilometers}${!!value.miles ? 'mi' : !!value.kilometers ? 'km' : ''}`
+            }
         };
     }
     asEnumeration(maxCount: number) { return undefined }
@@ -142,10 +146,20 @@ export const DateDomain = new class _DateDomain extends Elevated.Domain<Base.Par
     asString(format?: string) { 
         return {
             from(text: string): Base.Parseable & _Date { 
-                const asDate = new Date(text);
-                return { text: asDate.toLocaleDateString(), iso8601: asDate.toISOString() }
+                try {
+                    const asDate = new Date(text);
+                    return { text: asDate.toLocaleDateString(), iso8601: asDate.toISOString() }
+                } catch(e: any) {
+                    return { text, error: e.toString(), iso8601: "" }
+                }
             },
-            to(value: Base.Parseable & _Date) { return value.text || new Date(value.iso8601).toLocaleDateString() }
+            to(value: Base.Parseable & _Date) { 
+                try {
+                    return value.text || new Date(value.iso8601).toLocaleDateString() 
+                } catch(e: any) {
+                    return "";
+                }
+            }
         };
     }
     asEnumeration(maxCount: number) { return undefined }
@@ -187,7 +201,12 @@ export const WhenDomain = new class _EventDomain extends Elevated.Domain<Base.Pa
                 const from = DateDomain.asString().from(text_.from);
                 const to = DateDomain.asString().from(text_.to);
                 const text = (basis?.times === undefined ? '' : `${basis.times.from.text} - ${basis.times.to.text} `) + `${text_.from} - ${text_.to}`;
-                const error = new Date(from.iso8601) <= new Date(to.iso8601) ? undefined : `WhenDomain.asDates: 'from' date must occur before 'to' date`;
+                let error: string|undefined;
+                try {
+                    error = new Date(from.iso8601) <= new Date(to.iso8601) ? undefined : `WhenDomain.asDates: 'from' date must occur before 'to' date`;
+                } catch(e: any) {
+                    error = e.toString();
+                }
                 return { ...basis, text, error, dates: { from, to } };
             },
             to(value: Base.Parseable & _When) { return { from: value.dates?.from.iso8601, to: value.dates?.to.iso8601 } }
