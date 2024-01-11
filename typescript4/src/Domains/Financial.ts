@@ -3,9 +3,17 @@ import * as Base from './Base';
 
 export type Currency = 'USD';
 
-export interface _PayRange {
-    hourly?: { currency: Currency, minimum?: number, maximum?: number }
-}
+export enum Basis { 
+    Hour = 'hr', 
+    Day = 'day',
+    Week = 'week',
+    Month = 'month'
+};
+
+export type _PayRange = {
+    currency: Currency, minimum?: number, maximum?: number,
+    basis: Base.Parseable & { standard?: Basis },
+};
 
 export const PayRangeDomain = new class _PayRangeDomain extends Elevated.Domain<Base.Parseable & _PayRange> {
     asString(format?: string) { 
@@ -14,8 +22,9 @@ export const PayRangeDomain = new class _PayRangeDomain extends Elevated.Domain<
                 let error: string|undefined;
                 let minimum: number|undefined;
                 let maximum: number|undefined;
-                const re1 = new RegExp(/\$\s*(\d+)(\.\d+)?/);
-                const re2 = new RegExp(/\$\s*(\d+)(\.\d+)?\s*-\s*\$?\s*(\d+)(\.\d+)?/);
+                let unit: string = '';
+                const re1 = new RegExp(/\$\s*(\d+)(\.\d+)?\s*(\/\S+)?/);
+                const re2 = new RegExp(/\$\s*(\d+)(\.\d+)?\s*-\s*\$?\s*(\d+)(\.\d+)\s*(\/\S+)?/);
                 const parsed1 = text.match(re1);
                 const parsed2 = text.match(re2);
                 if(parsed2) {
@@ -29,6 +38,9 @@ export const PayRangeDomain = new class _PayRangeDomain extends Elevated.Domain<
                     } else {
                         maximum = Number.parseInt(parsed2[4]);
                     }
+                    if(parsed2[5]) {
+                        unit = parsed2[5].toLowerCase();
+                    }
                 } else if(parsed1) {
                     if(parsed1[2]) {
                         minimum = Number.parseFloat(`${parsed1[1]}${parsed1[2]}`);
@@ -37,11 +49,24 @@ export const PayRangeDomain = new class _PayRangeDomain extends Elevated.Domain<
                         minimum = Number.parseInt(parsed1[1]);
                         maximum = minimum;
                     }
+                    if(parsed1[3]) {
+                        unit = parsed1[3].toLowerCase();
+                    }
                 } else {
                     error = 'Invalid format. Expected: $##.## (- $##.##)'
                 }
                 let currency: Currency = 'USD';
-                return { text, error, hourly: { currency, minimum, maximum }};
+                if(unit === '' || unit[0] === 'h') {
+                    return { text, error, currency, minimum, maximum, basis: { text: 'hour', standard: Basis.Hour }};
+                } else if(unit[0] === 'd') {
+                    return { text, error, currency, minimum, maximum, basis:  { text: 'day', standard: Basis.Day }};
+                } else if(unit[0] === 'w') {
+                    return { text, error, currency, minimum, maximum, basis: { text: 'week', standard: Basis.Week }};
+                } else if(unit === 'm') {
+                    return { text, error, currency, minimum, maximum, basis: { text: 'month', standard: Basis.Month }};
+                } else {
+                    return { text, error, currency, minimum, maximum, basis: { text: unit } };
+                }
             },
             to(value: Base.Parseable & _PayRange) { return value.text || "" }
         };
