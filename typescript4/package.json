@@ -1,6 +1,6 @@
 {
   "name": "@pitaman71/omniglot-live-domains",
-  "version": "0.2.54",
+  "version": "0.2.56",
   "description": "Omniglot: Cloud-Independent, Storage-Agnostic Backend-as-a-Service",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -33,7 +33,7 @@
   "peerDependencies": {
     "@pitaman71/omniglot-code-instruments": "^0.8.2",
     "@pitaman71/omniglot-introspect": "^0.8.17",
-    "@pitaman71/omniglot-live-data": "^0.2.157",
+    "@pitaman71/omniglot-live-data": "^0.2.162",
     "dinero.js": "^1.9.0",
     "faker": "^5.5.3",
     "geojson": "^0.5.0",
