@@ -1,5 +1,3 @@
-import * as Domains from './Domains';
-import * as Modules from './Modules';
-import * as WrapFaker from './WrapFaker';
-
-export { Domains, Modules, WrapFaker };
+export * as Domains from './Domains';
+export * as Modules from './Modules';
+export * as WrapFaker from './WrapFaker';

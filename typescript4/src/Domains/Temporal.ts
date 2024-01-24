@@ -37,6 +37,7 @@ export interface _Date {
 }
 
 export const DateDomain = new class _DateDomain extends Elevated.Domain<Base.Parseable & _Date> {
+    asJSON() { return undefined }
     asString(format?: string) { return new class {
         from(text: string): Base.Parseable & _Date {
             const luxon = Luxon.DateTime.fromISO(text);
@@ -126,6 +127,7 @@ export interface _Zone {
 }
 
 export const ZoneDomain = new class _ZoneDomain extends Elevated.Domain<Base.Parseable & _Zone> {
+    asJSON() { return undefined }
     asString(format?: string) { 
         const domain = this;
         return new class {
@@ -200,6 +202,7 @@ export interface _Time {
 }
 
 export const TimeDomain = new class _Domain extends Elevated.Domain<Base.Parseable & _Time> {
+    asJSON() { return undefined }
     asString() {
         return new class {
             from(text: string): Base.Parseable & _Time { 
@@ -318,6 +321,7 @@ export interface _DateTime {
 }
 
 export const DateTimeDomain = new class _DateTimeDomain extends Elevated.Domain<Base.Parseable & _DateTime> {
+    asJSON() { return undefined }
     asString(format?: string) {
         const domain = this;
         return new class {
@@ -414,6 +418,7 @@ export interface _Duration {
 }
 
 export const DurationDomain = new class _DurationDomain extends Elevated.Domain<Base.Parseable & _Duration> {   
+    asJSON() { return undefined }
     asString(format?: string) { return new class {
         from(text: string): Base.Parseable & _Duration {
             const parsed = text.match(/^((\d+)d)?((\d+)h)?((\d+)m)?((\d+)s)?/i);
@@ -480,6 +485,7 @@ export interface _Interval {
 }
 
 export const IntervalDomain = new class _IntervalDomain extends Elevated.Domain<Base.Parseable & _Interval> {
+    asJSON() { return undefined }
     asString(format?: string) { return new class {
         from(text: string): Base.Parseable & _Interval {
             let error: any;
