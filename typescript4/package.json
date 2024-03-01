@@ -1,6 +1,6 @@
 {
   "name": "@pitaman71/omniglot-live-domains",
-  "version": "0.2.196",
+  "version": "0.2.199",
   "description": "Omniglot: Cloud-Independent, Storage-Agnostic Backend-as-a-Service",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
