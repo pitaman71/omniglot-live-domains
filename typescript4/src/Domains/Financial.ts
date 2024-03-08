@@ -1,17 +1,18 @@
 import * as Elevated from '@pitaman71/omniglot-introspect';
 import * as Base from './Base';
 
-export type Currency = 'USD';
+import * as Currency from './Currency';
 
 export enum Basis { 
     Hour = 'hr', 
     Day = 'day',
     Week = 'week',
-    Month = 'month'
+    Month = 'month',
+    Project = 'project'
 };
 
 export type _PayRange = {
-    currency: Currency, minimum?: number, maximum?: number,
+    currency?: Currency.Codes, minimum?: number, maximum?: number,
     basis: Base.Parseable & { standard?: Basis },
 };
 
@@ -55,7 +56,7 @@ export const PayRangeDomain = new class _PayRangeDomain extends Elevated.Domain<
                 } else {
                     error = 'Invalid format. Expected: $##.## (- $##.##)'
                 }
-                let currency: Currency = 'USD';
+                let currency: undefined|Currency.Codes.USD;
                 if(unit === '' || unit[0] === 'h') {
                     return { text, error, currency, minimum, maximum, basis: { text: 'hour', standard: Basis.Hour }};
                 } else if(unit[0] === 'd') {

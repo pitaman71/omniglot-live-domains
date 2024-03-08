@@ -22,36 +22,43 @@ export const ServiceDomain = new class _ServiceDomain extends Elevated.Domain<Ba
                 let standard: undefined|ServiceNames = undefined;
                 let error:string|undefined = undefined;
                 switch(text.toLowerCase()) {
-                    case 'facbeook':
+                    case 'com.facebook':
+                    case 'facebook':
                     case 'fb':
                         standard = ServiceNames.FACEBOOK;
                         break;
+                    case 'com.instagram':
                     case 'instagram':
                     case 'ig':
                         standard = ServiceNames.INSTAGRAM;
                         break;
+                    case 'com.linkedin':
                     case 'linkedin':
                     case 'li':
                         standard = ServiceNames.LINKEDIN;
                         break;
+                    case 'com.snapchat':
                     case 'snapchat':
                     case 'snap':
                         standard = ServiceNames.SNAPCHAT;
                         break;
+                    case 'com.tiktok':
                     case 'tiktok':
                     case 'tt':
                         standard = ServiceNames.TIKTOK;
                         break;
+                    case 'com.twitter':
                     case 'twitter':
                     case 'x':
                         standard = ServiceNames.TWITTER;
                         break;
+                    case 'com.wechat':
                     case 'wechat':
                     case 'wc':
                         standard = ServiceNames.TIKTOK;
                         break;
                     default:
-                        error = `Expected format is ig:handle or fb:handle or li:handle`;
+                        error = `Expected format is com.facebook or facebook or fb (or similar)`;
                         break;
                 }
                 return { standard, text, error }

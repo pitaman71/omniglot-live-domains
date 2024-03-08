@@ -1,4 +1,5 @@
 export * as Base from './Base';
+export * as Currency from './Currency';
 export * as Financial from './Financial';
 export * as Geospatial from './Geospatial';
 export * as Internet  from './Internet';
