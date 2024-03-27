@@ -107,7 +107,7 @@ export const PayRangeDomain = new class _PayRangeDomain extends Elevated.Domain<
                 }
                 return { text, error, currency, minimum, maximum, basis: { standard: basis }};
             },
-            to(value: Base.Parseable<_PayRange>) { return value.text || value.parsed === undefined ? '' : `${value.parsed.currency} ${value.parsed.minimum} - ${value.parsed.maximum} ${value.parsed.basis.standard || value.parsed.basis.text}` }
+            to(value: Base.Parseable<_PayRange>) { return value.text ? value.text : value.parsed === undefined ? '' : value.parsed.minimum === value.parsed.maximum ? `${value.parsed.currency} ${value.parsed.minimum} ${value.parsed.basis.standard || value.parsed.basis.text}` : `${value.parsed.currency} ${value.parsed.minimum} - ${value.parsed.maximum} ${value.parsed.basis.standard || value.parsed.basis.text}` }
         };
     }
     asEnumeration(maxCount: number) { return undefined }

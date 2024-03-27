@@ -1,6 +1,6 @@
 {
   "name": "@pitaman71/omniglot-live-domains",
-  "version": "0.2.215",
+  "version": "0.2.218",
   "description": "Omniglot: Cloud-Independent, Storage-Agnostic Backend-as-a-Service",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
     "@types/dinero.js": "^1.8.1",
     "@types/faker": "^5.5.9",
     "@types/geojson": "^7946.0.8",
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^29.5.12",
     "@types/luxon": "^2.0.7",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.1.0"
