@@ -41,12 +41,13 @@ export const PayRangeDomain = new class _PayRangeDomain extends Elevated.Domain<
                 }
                 minimum = json.minimum;
                 maximum = json.maximum;
+                const parsed = {
+                    currency, basis: { standard }, minimum, maximum
+                };
+                const text = PayRangeDomain.asString().to({ parsed })
                 return (
                     errors.length > 0 ? { error: errors.join(', ') } 
-                    : { parsed: {
-                            currency, basis: { standard }, minimum, maximum
-                        }, text: `${currency} ${minimum} - ${maximum} ${standard}`
-                    }
+                    : { parsed, text }
                 );
             },
             to(value: Base.Parseable<_PayRange>) {
