@@ -118,7 +118,7 @@ export function OfInteger(classSpec: string, maker: () => number, range: Countab
         asString() {
             const target=this;
             return new class {
-                from(text: string) { return parseInt(text) % range.unit; }
+                from(text: string) { return range.unit * Math.floor(parseInt(text) / range.unit); }
                 to(value: number) { return value.toString() }
             }
         }
