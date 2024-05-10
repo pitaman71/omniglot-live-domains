@@ -8,7 +8,7 @@ const __moduleName__ = 'omniglot-live-data.Modules.Media'
 
 export const directory = new Definitions.Directory();
 
-interface _Asset {
+export interface _Asset {
     mime?: string,
     pixelDimensions?: { width: number, height: number}, 
     uri?: string
