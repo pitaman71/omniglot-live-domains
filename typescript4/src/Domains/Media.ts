@@ -9,9 +9,13 @@ const __moduleName__ = 'omniglot-live-data.Modules.Media'
 export const directory = new Definitions.Directory();
 
 export interface _Asset {
+    error?: string,
     mime?: string,
     pixelDimensions?: { width: number, height: number}, 
-    uri?: string
+    uri?: string,
+    optimize?: {
+        [format:string]: string    
+    }
 };
 
 export const AssetDomain = new class _EventDomain extends Elevated.Domain<Base.Parseable & _Asset> {
