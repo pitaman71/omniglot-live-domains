@@ -29,6 +29,7 @@ export interface _Descriptor {
 export const DescriptorDomain = new class _DescriptorDomain extends Elevated.Domain<Base.Parseable<_Descriptor>> {
     asJSON() {
         return {
+            schema() { return { text: "string", error: "string", parsed: { session: "string", principal: "string", nonce: "string" } }},
             from(json: any): Base.Parseable<_Descriptor> {
                 const error = (json.session === undefined || json.principal === undefined || json.nonce === undefined ) ? 
                     'Expected JSON to contain properties { session, principal, nonce }' : undefined;
@@ -88,6 +89,7 @@ export interface _Progress {
 export const ProgressDomain = new class _ProgressDomain extends Elevated.Domain<Base.Parseable<_Progress>> {
     asJSON() {
         return {
+            schema() { return { text: "string", error: "string", parsed: { units: { expected: "number", processing: "number", completed: "number" } }}},
             from(json: any): Base.Parseable<_Progress> {
                 const error = 
                     !!json.units && (!json.units.expected || !json.units.processing || !json.units.completed)
@@ -153,6 +155,7 @@ export function StateDomain<ConfigType>(configDomain: Elevated.Domain<Base.Parse
     return new class _StateDomain extends Elevated.Domain<Base.Parseable<_State<ConfigType>>> {
         asJSON() {
             return {
+                schema() { return { text: "string", error: "string", parsed: { config: {}, descriptor: DescriptorDomain.asJSON().schema(), progress: ProgressDomain.asJSON().schema() } } },
                 from(json: any): Base.Parseable<_State<ConfigType>> {
                     let error = (!json.config || !json.descriptor || !json.progress) ?
                         'Expected JSON to contain properties { config, descriptor, progress }' : undefined;

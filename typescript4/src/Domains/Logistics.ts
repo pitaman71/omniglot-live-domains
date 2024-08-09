@@ -1,10 +1,21 @@
 import * as Elevated from '@pitaman71/omniglot-introspect';
+import { Values } from '@pitaman71/omniglot-live-data';
 import * as Base from './Base';
 
 export interface _GeoPoint {
     asString?: { lat: string, lng: string }, 
     asNumber?: { lat: number, lng: number }
 }
+
+export const GeoPointDomain = new Values.PartialDomain({ 
+    asString: new Values.AggregateDomain({ lat: Values.TheStringDomain, lng: Values.TheStringDomain }),
+    asNumber: new Values.AggregateDomain({ lat: Values.TheNumberDomain, lng: Values.TheNumberDomain })
+});
+
+export const GeoShapeDomain = new Values.PartialDomain({ 
+    point: GeoPointDomain,
+    cloud: new Values.ArrayDomain(GeoPointDomain)
+});
 
 export interface _Where {
     googlePlaceId?: string;
@@ -13,6 +24,7 @@ export interface _Where {
         addressLine2?: string;
         postalCode?: string;
         city?: string;
+        stateOrProvince?: string;
         country?: string;
     };
     geo?: { 
@@ -21,19 +33,32 @@ export interface _Where {
     };
 }
 
-export const WhereDomain = new class _EventDomain extends Elevated.Domain<Base.Parseable & _Where> {
-    asString(format?: string) { 
-        return {
-            from(text: string): Base.Parseable & _Where { return { text } },
-            to(value: Base.Parseable & _Where) { return value.text || "" }
-        };
-    }
-    asEnumeration(maxCount: number) { return undefined }
-    asColumns() { return undefined }
-    cmp(a: Base.Parseable & _Where, b: Base.Parseable & _Where) {
-        return undefined;
-    }
-};
+export const NameDomain = new Values.PartialDomain({
+    shortName: Values.TheStringDomain,
+    longName: Values.TheStringDomain,
+    iso: new Values.AggregateDomain({ 
+        standard: Values.TheStringDomain, 
+        code: Values.TheStringDomain 
+    })
+});
+
+export const AddressDomain = new Values.PartialDomain({ 
+    addressLine1: Values.TheStringDomain,
+    addressLine2: Values.TheStringDomain,
+    postalCode: Values.TheStringDomain,
+    city: NameDomain,
+    county: NameDomain,
+    state: NameDomain,
+    country: NameDomain
+});
+
+export const WhereDomain = new Values.PartialDomain({
+    text: Values.TheStringDomain,
+    error: Values.TheStringDomain,
+    googlePlaceId: Values.TheStringDomain,
+    address: AddressDomain,
+    geo: GeoShapeDomain
+});
 
 export interface _Radius {
     sense: 'inside'|'outside';

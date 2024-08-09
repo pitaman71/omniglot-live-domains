@@ -21,6 +21,7 @@ export interface _Asset {
 export const AssetDomain = new class _EventDomain extends Elevated.Domain<Base.Parseable & _Asset> {
     asJSON() {
         return {
+            schema() { return { text: "string", error: "string", mime: "string", pixelDimensions: { width: "number", height: "number" }, uri: "string" } },
             from(json: any): Base.Parseable & _Asset {
                 const error = (json.pixelDimensions !== undefined && (json.pixelDimensions.width === undefined || json.pixelDimensions.height === undefined)) ? 
                     'Expected JSON to contain properties { pixelDimensions { width, number } }' : undefined;
@@ -33,10 +34,10 @@ export const AssetDomain = new class _EventDomain extends Elevated.Domain<Base.P
                 );
             },
             to(value: Base.Parseable & _Asset) {
-                return JSON.stringify({
+                return {
                     mime: value.mime,
                     pixelDimensions: value.pixelDimensions === undefined ? undefined : { width: value.pixelDimensions.width, height: value.pixelDimensions.height }
-                });
+                };
             }
         }
     }
@@ -54,7 +55,7 @@ export const AssetDomain = new class _EventDomain extends Elevated.Domain<Base.P
                     };
                 }
             },
-            to(value: Base.Parseable & _Asset) { return domain.asJSON().to(value) }
+            to(value: Base.Parseable & _Asset) { return JSON.stringify(domain.asJSON().to(value)) }
         };
     }
     asEnumeration(maxCount: number) { return undefined }

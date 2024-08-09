@@ -24,7 +24,8 @@ namespace HasState {
         asJSON() {
             const domain = this;
             return {
-                from(json: any): Base.Parseable<_Config> {
+                schema() { return { error: "string", owner: Objects.BindingDomain.asJSON().schema(), direction: "string", person: Objects.BindingDomain.asJSON().schema() } },
+                from(json: any): Base.Parseable<_Config>|null {
                     const error: undefined|string = undefined;
                     const owner = Objects.Binding.from_bound(json.owner || "?");
                     const direction = 
@@ -32,10 +33,10 @@ namespace HasState {
                         : json.direction === Direction.Invite ? Direction.Invite
                         : json.direction === Direction.Uninvite ? Direction.Uninvite
                         : Direction.Unknown;
-                    const person = json.person === undefined ? undefined : Objects.Binding.asJSON<string>().from(json.person);
-                    const project = json.project === undefined ? undefined : Objects.Binding.asJSON<string>().from(json.project);
-                    const queued = !Array.isArray(json.queued) ? undefined : json.queued.map((queued_: string) => Objects.Binding.asJSON<string>().from(queued_));
-                    const done = !Array.isArray(json.done) ? undefined : json.done.map((done_: string) => Objects.Binding.asJSON<string>().from(done_));
+                    const person = json.person === undefined ? undefined : Objects.BindingDomain.asJSON().from(json.person) || undefined;
+                    const project = json.project === undefined ? undefined : Objects.BindingDomain.asJSON().from(json.project) || undefined;
+                    const queued = !Array.isArray(json.queued) ? undefined : json.queued.map((queued_: string) => Objects.BindingDomain.asJSON().from(queued_));
+                    const done = !Array.isArray(json.done) ? undefined : json.done.map((done_: string) => Objects.BindingDomain.asJSON().from(done_));
                     return {
                         parsed: { owner, direction, person, project, queued, done },
                         error
