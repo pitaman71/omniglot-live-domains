@@ -17,7 +17,7 @@ export namespace Email {
         canonicalName = `${__moduleName__}.Email`
         build(builder: Properties.Builder<TypeParams>): void {
             builder.object('person');
-            builder.measure(new Elevated.Aggregate<Data>({
+            builder.measure(new Values.AggregateDomain<Data>({
                 address: Values.TheStringDomain
             }));
             builder.scalar();

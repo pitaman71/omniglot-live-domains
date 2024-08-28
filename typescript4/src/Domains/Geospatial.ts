@@ -17,8 +17,8 @@ export interface _Distance {
     distance: number;
 }
 
-export function makeDistanceDomain(units: Units.Distance, min: number, max: number, step: number): Elevated.Aggregate<_Distance> {
-    return new Elevated.Aggregate<_Distance>({ 
+export function makeDistanceDomain(units: Units.Distance, min: number, max: number, step: number) {
+    return new Values.AggregateDomain<_Distance>({ 
         units: new Values.EnumerationDomain(units),
         distance: new Values.RangeDomain(min, max, step)
     });

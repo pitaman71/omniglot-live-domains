@@ -1,26 +1,27 @@
-import * as Base from './Base';
 import faker from 'faker';
 import { Domain } from '@pitaman71/omniglot-introspect';
+import {  Values } from '@pitaman71/omniglot-live-data';
 
 export interface _URL {
-    url?: URL
+    url: URL
 }
 
-export const URLDomain = new class extends Domain<Base.Parseable & _URL> {
+export const URLDomain = new class extends Domain<Partial<Values.Parseable<void> & _URL>> {
     asString() {
         return new class {
-            from(text: string): Base.Parseable & _URL { 
+            from(text: string): Partial<Values.Parseable<void>> & _URL { 
                 return { text, url: new URL(text) }
             }
-            to(value: Base.Parseable & _URL) { return value.url?.toString() || value.text || "" }
+            to(value: Partial<Values.Parseable<void>> & _URL) { 
+                if(typeof value.text === 'string') value.text;
+                return value.url?.toString()|| "" ;
+            }
         }
     }
     asEnumeration() {
         return undefined;
     }
-    asColumns() { return undefined; }
-
-    cmp(a: _URL, b:_URL) { return a < b ? -1 : a > b ? +1 : 0 }
+    cmp(a: Partial<Values.Parseable<void> & _URL>, b:Partial<Values.Parseable<void> & _URL>) { return a < b ? -1 : a > b ? +1 : 0 }
 }
 
 export function PickURL() {

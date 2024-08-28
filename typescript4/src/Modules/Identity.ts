@@ -19,9 +19,9 @@ export namespace PersonName {
         canonicalName = `${__moduleName__}.PersonName`
         build(builder: Properties.Builder<TypeParams>): void {
             builder.object('person');
-            builder.measure(new Elevated.Aggregate<Data>({
-                'givenName': Values.TheStringDomain,
-                'familyName': Values.TheStringDomain
+            builder.measure(new Values.AggregateDomain<Data>({
+                givenName: Values.TheStringDomain,
+                familyName: Values.TheStringDomain
             }));
             builder.scalar();
         }
@@ -33,7 +33,7 @@ export namespace BirthDate {
     export type TypeParams = {
         Binding: { person: Objects.Binding<string|object> },
         Value: Temporal._Date,
-        Domain: Elevated.Domain<Temporal._Date>
+        Domain: Elevated.Domain<Partial<Temporal._Date>>
     } 
     export const Descriptor = new class _Descriptor extends Properties.Descriptor<TypeParams> {
         canonicalName = `${__moduleName__}.BirthDate`

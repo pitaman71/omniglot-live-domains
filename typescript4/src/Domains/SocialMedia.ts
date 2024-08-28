@@ -1,5 +1,5 @@
 import * as Elevated from '@pitaman71/omniglot-introspect';
-import * as Base from './Base';
+import { Values } from '@pitaman71/omniglot-live-data';
 
 export enum ServiceNames {
     FACEBOOK = 'com.facebook',
@@ -15,7 +15,7 @@ export interface _Service {
     standard?: ServiceNames
 }
 
-export const ServiceDomain = new class _ServiceDomain extends Elevated.Domain<Base.Parseable & _Service> {
+class _ServiceDomain extends Elevated.Domain<Partial<Values.Parseable<void>> & _Service> {
     asString(format?: string) { 
         return {
             from(text: string) { 
@@ -63,7 +63,7 @@ export const ServiceDomain = new class _ServiceDomain extends Elevated.Domain<Ba
                 }
                 return { standard, text, error }
             },
-            to(value: Base.Parseable & _Service) { return value.text || (
+            to(value: Partial<Values.Parseable<void>> & _Service) { return typeof value.text === 'string' ? value.text : (
                 value.standard === ServiceNames.FACEBOOK ? 'facebook' :
                 value.standard === ServiceNames.INSTAGRAM ? 'instagram' :
                 value.standard === ServiceNames.LINKEDIN ? 'linkedin' :
@@ -75,7 +75,7 @@ export const ServiceDomain = new class _ServiceDomain extends Elevated.Domain<Ba
     }
     asEnumeration(maxCount: number) {
         return new class {
-            *forward(): Generator<Base.Parseable & _Service> {
+            *forward(): Generator<Partial<Values.Parseable<void>> & _Service> {
                 yield { standard: ServiceNames.FACEBOOK };
                 yield { standard: ServiceNames.INSTAGRAM };
                 yield { standard: ServiceNames.LINKEDIN };
@@ -83,7 +83,7 @@ export const ServiceDomain = new class _ServiceDomain extends Elevated.Domain<Ba
                 yield { standard: ServiceNames.TWITTER };
                 yield { standard: ServiceNames.WECHAT };
             }
-            *backward(): Generator<Base.Parseable & _Service> {
+            *backward(): Generator<Partial<Values.Parseable<void>> & _Service> {
                 yield { standard: ServiceNames.WECHAT };
                 yield { standard: ServiceNames.TWITTER };
                 yield { standard: ServiceNames.SNAPCHAT };
@@ -93,23 +93,23 @@ export const ServiceDomain = new class _ServiceDomain extends Elevated.Domain<Ba
             }
         }    
     }
-    asColumns() { return undefined }
-    cmp(a: Base.Parseable & _Service, b: Base.Parseable & _Service) {
+    cmp(a: Partial<Values.Parseable<void>> & _Service, b: Partial<Values.Parseable<void>> & _Service) {
         if(a.standard === undefined || b.standard === undefined) return undefined;
         return a.standard < b.standard ? -1 : a.standard > b.standard ? 1 : 0;
     }
-};
+}
+export const ServiceDomain = new _ServiceDomain();
 
 export interface _Account {
-    service?: Base.Parseable & _Service;
+    service?: Partial<Values.Parseable<void>> & _Service;
     handle?: string;
 };
 
-export const AccountDomain = new class _AccountDomain extends Elevated.Domain<Base.Parseable & _Account> {
+class _AccountDomain extends Elevated.Domain<Partial<Values.Parseable<void>> & _Account> {
     asString(format?: string) { 
         return {
             from(text: string) { 
-                let service: undefined|(Base.Parseable & _Service) = undefined;
+                let service: undefined|(Partial<Values.Parseable<void>> & _Service) = undefined;
                 let handle:  undefined|string = undefined;
                 let error:string|undefined = undefined;
                 const match = 
@@ -121,14 +121,13 @@ export const AccountDomain = new class _AccountDomain extends Elevated.Domain<Ba
                 }
                 return { service, handle, text, error }
             },
-            to(value: Base.Parseable & _Account) { return value.text || 
+            to(value: Partial<Values.Parseable<void>> & _Account) { return typeof value.text === 'string' ? value.text :
                 `${value.service === undefined ? undefined : ServiceDomain.asString().to(value.service)}: ${value.handle}`;
             }
         };
     }
     asEnumeration(maxCount: number) { return undefined }
-    asColumns() { return undefined }
-    cmp(a: Base.Parseable & _Account, b: Base.Parseable & _Account) {
+    cmp(a: Partial<Values.Parseable<void>> & _Account, b: Partial<Values.Parseable<void>> & _Account) {
         if(a.service === undefined || b.service === undefined)
             return undefined;
         let code:-1|1|0|undefined = ServiceDomain.cmp(a.service, b.service);
@@ -138,4 +137,5 @@ export const AccountDomain = new class _AccountDomain extends Elevated.Domain<Ba
         if(a.handle > b.handle) return 1;
         return 0;
     }
-};
+}
+export const AccountDomain = new _AccountDomain();

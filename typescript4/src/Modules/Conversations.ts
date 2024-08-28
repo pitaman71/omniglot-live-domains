@@ -61,7 +61,7 @@ export namespace SubjectHasComment {
 
 export namespace Comment {
     export interface Data { 
-        when?: Temporal._Date,
+        when?: Partial<Temporal._Date>,
         text?: string
     };
     export type TypeParams = {
@@ -76,12 +76,12 @@ export namespace Comment {
         canonicalName = `${__moduleName__}.Comment`
         build(builder: Properties.Builder<TypeParams>): void {
             builder.object('comment');
-            builder.measure(new Elevated.Aggregate<Data>({
+            builder.measure(new Values.AggregateDomain<Data>({
                 when: Temporal.DateDomain,
                 text: Values.TheStringDomain
             }));
             builder.example(() => ({
-                when: Temporal.DateDomain.fromJSDate(faker.date.past()),
+                when: Temporal.DateDomain.asJSDate().from(faker.date.past())||undefined,
                 text: faker.lorem.sentences()
             }))
             builder.scalar();
@@ -89,3 +89,4 @@ export namespace Comment {
     }();
     directory.descriptors.properties.set(Descriptor.canonicalName, Descriptor);
 }
+

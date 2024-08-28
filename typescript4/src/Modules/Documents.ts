@@ -20,8 +20,8 @@ export namespace Title {
         canonicalName = __className__;
         build(builder: Properties.Builder<TypeParams>): void {
             builder.object('document');
-            builder.measure(new Elevated.Aggregate<Data>({
-                'title': Values.TheStringDomain
+            builder.measure(new Values.AggregateDomain<Data>({
+                title: Values.TheStringDomain
             }));
             builder.scalar();
         }
