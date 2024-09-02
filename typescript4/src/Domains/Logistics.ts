@@ -31,12 +31,40 @@ export const AddressDomain = new Values.AggregateDomain({
     country: NameDomain
 }, ['addressLine1', 'addressLine2', 'postalCode', 'city', 'county', 'state', 'country']);
 
-export const WhereDomain = new Values.AggregateDomain({
-    name: Values.TheStringDomain,
-    googlePlaceId: Values.TheStringDomain,
-    address: AddressDomain,
-    geo: GeoShapeDomain
-}, ['googlePlaceId', 'address', 'geo']);
+export interface _Where {
+    name: string,
+    googlePlaceId?: string,
+    address?: Elevated.getValueType<typeof AddressDomain>,
+    geo?: Elevated.getValueType<typeof GeoShapeDomain>
+};
+
+class _WhereDomain extends Values.AggregateDomain<_Where> {
+    constructor() {
+        super({
+            name: Values.TheStringDomain,
+            googlePlaceId: Values.TheStringDomain,
+            address: AddressDomain,
+            geo: GeoShapeDomain
+        }, ['googlePlaceId', 'address', 'geo'])
+    }
+    asJSON() {
+        return {
+            from(json: Elevated.JSONValue, options?: { onError?: (error: Elevated.Error) => void }): _Where|null {
+                if(typeof json === 'string') {
+                    return {
+                        name: json
+                    }
+                }
+                return super.asJSON().from(json, options);
+            }, to(value: _Where): Elevated.JSONValue {
+                if(value === null) return null;
+                return super.asJSON().to(value);
+            }
+        }
+    }
+}
+
+export const WhereDomain = new _WhereDomain();
 
 export interface _Radius {
     sense: 'inside'|'outside';
