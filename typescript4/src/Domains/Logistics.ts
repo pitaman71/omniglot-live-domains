@@ -48,17 +48,18 @@ class _WhereDomain extends Values.AggregateDomain<_Where> {
         }, ['googlePlaceId', 'address', 'geo'])
     }
     asJSON() {
+        const superAsJSON = () => super.asJSON();
         return {
-            from(json: Elevated.JSONValue, options?: { onError?: (error: Elevated.Error) => void }): _Where|null {
+            from(json: Elevated.JSONValue, options?: { onError?: (error: Elevated.Error) => void }): Partial<_Where>|null {
                 if(typeof json === 'string') {
                     return {
                         name: json
                     }
                 }
-                return super.asJSON().from(json, options);
-            }, to(value: _Where): Elevated.JSONValue {
+                return superAsJSON().from(json, options);
+            }, to(value: Partial<_Where>): Elevated.JSONValue {
                 if(value === null) return null;
-                return super.asJSON().to(value);
+                return superAsJSON().to(value);
             }
         }
     }
