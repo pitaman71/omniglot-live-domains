@@ -1,4 +1,8 @@
-import * as Elevated from '@pitaman71/omniglot-introspect';
+/**
+ * @packageDocumentation
+ * Introspectable domain definitions for financial data.
+ */
+import * as Introspection from 'typescript-introspection';
 import { Values } from '@pitaman71/omniglot-live-data';
 
 import * as Currency from './Currency';
@@ -6,9 +10,9 @@ import * as Currency from './Currency';
 export const BasisDomain = new Values.EnumerationDomain('hr', 'day', 'week', 'month', 'project');
 export const AmountDomain = new Values.RangeDomain(undefined, undefined, 1);
 
-type BasisType = Elevated.getValueType<typeof BasisDomain>;
-type AmountType = Elevated.getValueType<typeof AmountDomain>;
-type CurrencyCodesType = Elevated.getValueType<typeof Currency.CodesDomain>;
+type BasisType = Introspection.getValueType<typeof BasisDomain>;
+type AmountType = Introspection.getValueType<typeof AmountDomain>;
+type CurrencyCodesType = Introspection.getValueType<typeof Currency.CodesDomain>;
 
 export interface _Tender {
     currency?: CurrencyCodesType;
@@ -53,6 +57,9 @@ class _TenderDomain extends Values.AggregateDomain<_Tender> {
         return undefined;
     }
 }
+/**
+ * Inrtospectable domain for a value representing an amount of money in a specific currency.
+ */
 export const TenderDomain = new _TenderDomain();
 
 export type _PayRange = {
@@ -125,4 +132,8 @@ class _PayRangeDomain extends Values.AggregateDomain<_PayRange> {
         return undefined;
     }
 }
+/**
+ * Inrtospectable domain for a value representing an range of acceptable pay rates,
+ * including a payment basis.
+ */
 export const PayRangeDomain = new _PayRangeDomain;

@@ -1,7 +1,12 @@
-// https://gist.github.com/Crownie/b92805d73ed85fa50fc99a4183ba3c71#file-currencycode-enum-ts
 
 import { Values } from '@pitaman71/omniglot-live-data';
 
+/**
+ * Enumeration of ISO currency codes.
+ * 
+ * Values manually imported from:
+ * https://gist.github.com/Crownie/b92805d73ed85fa50fc99a4183ba3c71#file-currencycode-enum-ts
+ */
 export const CodesDomain = new Values.EnumerationDomain(
   'USD',
   'CAD',

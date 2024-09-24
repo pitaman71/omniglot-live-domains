@@ -1,4 +1,4 @@
-import * as Elevated from '@pitaman71/omniglot-introspect'; 
+import * as Introspection from 'typescript-introspection'; 
 import { Values } from '@pitaman71/omniglot-live-data';
 import { TheNumberDomain } from '@pitaman71/omniglot-live-data/lib/Values';
 
@@ -43,7 +43,7 @@ export const ProgressDomain = new Values.AggregateDomain({
     units: UnitsDomain
 });
 
-export function StateDomain<ConfigType>(configDomain: Elevated.Domain<ConfigType>) {
+export function StateDomain<ConfigType>(configDomain: Introspection.Domain<ConfigType>) {
     return new Values.AggregateDomain({
         config: configDomain,
         descriptor: DescriptorDomain,

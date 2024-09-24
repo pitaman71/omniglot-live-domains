@@ -1,6 +1,9 @@
-import * as Elevated from '@pitaman71/omniglot-introspect';
+import * as Introspection from 'typescript-introspection';
 import { Values } from '@pitaman71/omniglot-live-data';
 
+/**
+ * Enumeration of major social media channels.
+ */
 export enum ServiceNames {
     FACEBOOK = 'com.facebook',
     INSTAGRAM = 'com.instagram',
@@ -15,7 +18,7 @@ export interface _Service {
     standard?: ServiceNames
 }
 
-class _ServiceDomain extends Elevated.Domain<Partial<Values.Parseable<void>> & _Service> {
+class _ServiceDomain extends Introspection.Domain<Partial<Values.Parseable<void>> & _Service> {
     asString(format?: string) { 
         return {
             from(text: string) { 
@@ -105,7 +108,7 @@ export interface _Account {
     handle?: string;
 };
 
-class _AccountDomain extends Elevated.Domain<Partial<Values.Parseable<void>> & _Account> {
+class _AccountDomain extends Introspection.Domain<Partial<Values.Parseable<void>> & _Account> {
     asString(format?: string) { 
         return {
             from(text: string) { 
@@ -138,4 +141,7 @@ class _AccountDomain extends Elevated.Domain<Partial<Values.Parseable<void>> & _
         return 0;
     }
 }
+/**
+ * Handle to a social media account
+ */
 export const AccountDomain = new _AccountDomain();

@@ -1,6 +1,6 @@
 import * as faker from 'faker';
 
-import * as Elevated from '@pitaman71/omniglot-introspect';
+import * as Introspection from 'typescript-introspection';
 import { Objects, Properties, Values } from '@pitaman71/omniglot-live-data';
 import { StateDomain } from './Tasks';
 
@@ -17,20 +17,16 @@ export const ConfigDomain = new Values.AggregateDomain({
 
 namespace HasState {
     export const Domain = new Values.ParseableDomain(StateDomain(ConfigDomain));
-    const foo = Domain.asProperties().domain;
-    export interface TypeParams extends Properties.TypeParams<any, any, Elevated.Domain<any>> {
-        Binding: { task: Objects.Binding<string> },
-        Value: Elevated.getValueType<typeof Domain>,
-        Domain: typeof Domain
-    }
-    export const Descriptor = new class _Descriptor extends Properties.Descriptor<TypeParams> {
-        canonicalName = 'Tasks.InviteAll.HasState';
-        build(builder: Properties.Builder<TypeParams>): void {
-            builder.object('task');
-            builder.measure(Domain);
-            builder.scalar();
+    export interface BindingType extends Objects.BindingType<string> { task: Objects.Binding<string> };
+    export type ValueType = Introspection.getValueType<typeof Domain>;
+    export const Descriptor = new Properties.Descriptor<BindingType, ValueType>(
+        'Tasks.InviteAll.HasState',
+        (builder): void => {
+            builder.description('Property representing, for a task, the current state of that task');
+            builder.symbol('task', 'a Task which has state');
+            builder.scalar(Domain);
         }
-    };
+    );
 }
 
 describe('HasState.asJSON.from', () => {

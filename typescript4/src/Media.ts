@@ -1,4 +1,4 @@
-import * as Elevated from '@pitaman71/omniglot-introspect';
+import * as Introspection from 'typescript-introspection';
 
 import { Definitions, Values } from '@pitaman71/omniglot-live-data';
 
@@ -14,11 +14,15 @@ export const PixelDimensionsDomain = new Values.AggregateDomain({
 export interface _Asset {
     error?: string,
     mime?: string,
-    pixelDimensions?: Elevated.getValueType<typeof PixelDimensionsDomain>,
+    pixelDimensions?: Introspection.getValueType<typeof PixelDimensionsDomain>,
     uri?: string,
-    optimize?: Elevated.JSONValue   
+    optimize?: Introspection.JSONValue   
 }
 
+/**
+ * A media file, such as a video or image, along with critical
+ * metadata.
+ */
 export const AssetDomain = new Values.AggregateDomain<_Asset>({
     mime: Values.TheStringDomain,
     pixelDimensions: PixelDimensionsDomain,

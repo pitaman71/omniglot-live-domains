@@ -1,6 +1,6 @@
 import * as faker from 'faker';
 
-import { JSONValue } from '@pitaman71/omniglot-introspect';
+import { JSONValue } from 'typescript-introspection';
 import { DateDomain, DateTimeDomain, IntervalDomain, WhenDomain } from './Temporal';
 
 function _cmp<DataType>(a: DataType|undefined|null, b:DataType|undefined|null, comparator?: (a: DataType, b: DataType) => -1 | 0 | 1 | undefined): -1 | 0 | 1 | undefined {

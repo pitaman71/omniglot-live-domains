@@ -1,6 +1,6 @@
 import * as Luxon from 'luxon';
 import * as tzdata from 'tzdata';
-import * as Elevated from '@pitaman71/omniglot-introspect';
+import * as Introspection from 'typescript-introspection';
 import { Values } from '@pitaman71/omniglot-live-data';
 
 export const __moduleName__ = "omniglot-live-data.Domains.Temporal";
@@ -27,13 +27,16 @@ export interface _Date {
     day?: number;
 }
 
+/**
+ * A calendar date
+ */
 export const DateDomain = new class _DateDomain extends Values.AggregateDomain<_Date> {
     constructor() {
         super({
             year: new Values.RangeDomain(0, undefined, 1),
             month: new Values.RangeDomain(1, 12, 1),
             day: new Values.RangeDomain(1, 31, 0)
-        })
+        }, ['year', 'month', 'day' ])
     }
     asString(format?: string) { 
         const domain = this;
@@ -86,6 +89,9 @@ export interface _Zone {
     minutes?: number;
 }
 
+/**
+ * A time zone
+ */
 export const ZoneDomain = new class _ZoneDomain extends Values.AggregateDomain<_Zone> {
     constructor() {
         super({
@@ -151,19 +157,25 @@ export const ZoneDomain = new class _ZoneDomain extends Values.AggregateDomain<_
 }
 
 const tzNames = Object.getOwnPropertyNames(tzdata.zones);
-export const AllZones = new Elevated.Samples<_Zone>(
+export const AllZones = new Introspection.Samples<_Zone>(
     ...tzNames.map(tzName => ZoneDomain.getByName(tzName)) 
 );
 
+/**
+ * AM/PM indicator, if needed
+ */
 export const MeridianDomain = new Values.EnumerationDomain('am', 'pm')
 export interface _Time {
     hour?: number;
     minute?: number;
     second?: number;
-    meridian?: Elevated.getValueType<typeof MeridianDomain>;
+    meridian?: Introspection.getValueType<typeof MeridianDomain>;
     zone?: _Zone;
 }
 
+/**
+ * Time of day
+ */
 export const TimeDomain = new class _Domain extends Values.AggregateDomain<_Time> {
     constructor() {
         super({
@@ -238,6 +250,9 @@ export interface _DateTime {
     time?: _Time;
 }
 
+/**
+ * Calendar date and time of day
+ */
 export const DateTimeDomain = new class _DateTimeDomain extends Values.AggregateDomain<_DateTime> {
     constructor() {
         super({
@@ -297,6 +312,9 @@ export interface _Duration {
     seconds?: number
 }
 
+/**
+ * Measurement between two moments in time.
+ */
 export const DurationDomain = new class _DurationDomain extends Values.AggregateDomain<_Duration> {
     constructor() {
         super({
@@ -361,6 +379,10 @@ export interface _Interval {
     duration?: _Duration
 }
 
+/**
+ * A pair of points in time denoting every moment between those two
+ * points, inclusive of both endpoints.
+ */
 export const IntervalDomain = new class _IntervalDomain extends Values.AggregateDomain<_Interval> {
     constructor() {
         super({
@@ -445,12 +467,12 @@ export const DateRangeDomain = new Values.AggregateDomain({
     from: DateDomain,
     to: DateDomain
 });
-export type _DateRange = Elevated.getValueType<typeof DateRangeDomain>;
+export type _DateRange = Introspection.getValueType<typeof DateRangeDomain>;
 export const TimeRangeDomain = new Values.AggregateDomain({
     from: TimeDomain,
     to: TimeDomain
 });
-export type _TimeRange = Elevated.getValueType<typeof TimeRangeDomain>;
+export type _TimeRange = Introspection.getValueType<typeof TimeRangeDomain>;
 export interface _When {
     at?: _Date,
     dates?: _DateRange,
@@ -485,4 +507,8 @@ class _WhenDomain extends Values.AggregateDomain<_When> {
         })
     }
 };
+/**
+ * A flexible representation of when an event may happen, is happening, or has happened.
+ */
+
 export const WhenDomain = new _WhenDomain();
