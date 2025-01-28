@@ -3,12 +3,17 @@
  * Introspectable domain definitions for financial data.
  */
 import * as Introspection from 'typescript-introspection';
-import { Values } from '@pitaman71/omniglot-live-data';
+import { Definitions, Values } from '@pitaman71/omniglot-live-data';
 
 import * as Currency from './Currency';
 
-export const BasisDomain = new Values.EnumerationDomain('hr', 'day', 'week', 'month', 'project');
-export const AmountDomain = new Values.RangeDomain(undefined, undefined, 1);
+const __moduleName__ = 'omniglot-live-domains.Financial';
+export const directory = new Definitions.Directory();
+
+export const BasisDomain = new Values.EnumerationDomain(`${__moduleName__}.BasisDomain`, 'hr', 'day', 'week', 'month', 'project');
+directory.add(BasisDomain);
+export const AmountDomain = new Values.RangeDomain(`${__moduleName__}.AmountDomain`, undefined, undefined, 1);
+directory.add(AmountDomain);
 
 type BasisType = Introspection.getValueType<typeof BasisDomain>;
 type AmountType = Introspection.getValueType<typeof AmountDomain>;
@@ -20,8 +25,8 @@ export interface _Tender {
 };
 
 class _TenderDomain extends Values.AggregateDomain<_Tender> {
-    constructor() {
-        super({
+    constructor(canonicalName: string) {
+        super(canonicalName, {
             currency: Currency.CodesDomain,
             amount: AmountDomain
         }, ['currency'])
@@ -60,7 +65,8 @@ class _TenderDomain extends Values.AggregateDomain<_Tender> {
 /**
  * Inrtospectable domain for a value representing an amount of money in a specific currency.
  */
-export const TenderDomain = new _TenderDomain();
+export const TenderDomain = new _TenderDomain(`${__moduleName__}.TenderDomain`);
+directory.add(TenderDomain);
 
 export type _PayRange = {
     currency?: CurrencyCodesType, 
@@ -70,12 +76,12 @@ export type _PayRange = {
 };
 
 class _PayRangeDomain extends Values.AggregateDomain<_PayRange> {
-    constructor() {
-        super({
+    constructor(canonicalName: string) {
+        super(canonicalName, {
             currency: Currency.CodesDomain,
             minimum: AmountDomain,
             maximum: AmountDomain,
-            basis: new Values.AggregateDomain({
+            basis: new Values.AggregateDomain(`${canonicalName}.standard`, {
                 standard: BasisDomain
             }, [ 'standard' ])
         }, ['currency'])
@@ -136,4 +142,5 @@ class _PayRangeDomain extends Values.AggregateDomain<_PayRange> {
  * Inrtospectable domain for a value representing an range of acceptable pay rates,
  * including a payment basis.
  */
-export const PayRangeDomain = new _PayRangeDomain;
+export const PayRangeDomain = new _PayRangeDomain(`${__moduleName__}.PayRangeDomain`);
+directory.add(PayRangeDomain);

@@ -1,9 +1,10 @@
 import * as Luxon from 'luxon';
 import * as tzdata from 'tzdata';
 import * as Introspection from 'typescript-introspection';
-import { Values } from '@pitaman71/omniglot-live-data';
+import { Definitions, Values } from '@pitaman71/omniglot-live-data';
 
-export const __moduleName__ = "omniglot-live-data.Domains.Temporal";
+const __moduleName__ = 'omniglot-live-domains.Temporal'
+export const directory = new Definitions.Directory();
 
 function _cmp<DataType>(a: DataType|undefined, b:DataType|undefined, comparator?: (a: DataType, b: DataType) => -1 | 0 | 1 | undefined): -1 | 0 | 1 | undefined {
     if(a === undefined || b === undefined) {
@@ -32,10 +33,10 @@ export interface _Date {
  */
 export const DateDomain = new class _DateDomain extends Values.AggregateDomain<_Date> {
     constructor() {
-        super({
-            year: new Values.RangeDomain(0, undefined, 1),
-            month: new Values.RangeDomain(1, 12, 1),
-            day: new Values.RangeDomain(1, 31, 0)
+        super(`${__moduleName__}.DateDomain`, {
+            year: new Values.RangeDomain(`${__moduleName__}.Date.year`, 0, undefined, 1),
+            month: new Values.RangeDomain(`${__moduleName__}.Date.month`, 1, 12, 1),
+            day: new Values.RangeDomain(`${__moduleName__}.Date.day`,1, 31, 0)
         }, ['year', 'month', 'day' ])
     }
     asString(format?: string) { 
@@ -81,6 +82,7 @@ export const DateDomain = new class _DateDomain extends Values.AggregateDomain<_
     fromBlank() { return {} }
     
 }
+directory.add(DateDomain);
 
 export interface _Zone {
     name?: string;
@@ -94,7 +96,7 @@ export interface _Zone {
  */
 export const ZoneDomain = new class _ZoneDomain extends Values.AggregateDomain<_Zone> {
     constructor() {
-        super({
+        super(`${__moduleName__}.ZoneDomain`,{
             name: Values.TheStringDomain,
             short: Values.TheStringDomain,
             long: Values.TheStringDomain,
@@ -155,16 +157,14 @@ export const ZoneDomain = new class _ZoneDomain extends Values.AggregateDomain<_
         }
     }
 }
-
-const tzNames = Object.getOwnPropertyNames(tzdata.zones);
-export const AllZones = new Introspection.Samples<_Zone>(
-    ...tzNames.map(tzName => ZoneDomain.getByName(tzName)) 
-);
+directory.add(ZoneDomain);
 
 /**
  * AM/PM indicator, if needed
  */
-export const MeridianDomain = new Values.EnumerationDomain('am', 'pm')
+export const MeridianDomain = new Values.EnumerationDomain(`${__moduleName__}.MeridianDomain`, 'am', 'pm');
+directory.add(MeridianDomain);
+
 export interface _Time {
     hour?: number;
     minute?: number;
@@ -178,10 +178,10 @@ export interface _Time {
  */
 export const TimeDomain = new class _Domain extends Values.AggregateDomain<_Time> {
     constructor() {
-        super({
-            hour: new Values.RangeDomain(0, 23, 1),
-            minute: new Values.RangeDomain(0, 59, 1),
-            second: new Values.RangeDomain(0, 59, 1),
+        super(`${__moduleName__}.TimeDomain`,{
+            hour: new Values.RangeDomain(`${__moduleName__}.Time.hour`, 0, 23, 1),
+            minute: new Values.RangeDomain(`${__moduleName__}.Time.minute`,0, 59, 1),
+            second: new Values.RangeDomain(`${__moduleName__}.Time.second`,0, 59, 1),
             meridian: MeridianDomain,
             zone: ZoneDomain
         })
@@ -244,6 +244,7 @@ export const TimeDomain = new class _Domain extends Values.AggregateDomain<_Time
         }
     }
 }
+directory.add(TimeDomain);
 
 export interface _DateTime {
     date?: _Date;
@@ -255,7 +256,7 @@ export interface _DateTime {
  */
 export const DateTimeDomain = new class _DateTimeDomain extends Values.AggregateDomain<_DateTime> {
     constructor() {
-        super({
+        super(`${__moduleName__}.DateTimeDomain`,{
             date: DateDomain,
             time: TimeDomain
         })
@@ -304,6 +305,7 @@ export const DateTimeDomain = new class _DateTimeDomain extends Values.Aggregate
         return this.asLuxon().from(Luxon.DateTime.fromJSDate(date));
     }
 }
+directory.add(DateTimeDomain);
 
 export interface _Duration {
     days?: number,
@@ -317,7 +319,7 @@ export interface _Duration {
  */
 export const DurationDomain = new class _DurationDomain extends Values.AggregateDomain<_Duration> {
     constructor() {
-        super({
+        super(`${__moduleName__}.DurationDomain`,{
             days: Values.TheNumberDomain,
             hours: Values.TheNumberDomain,
             minutes: Values.TheNumberDomain,
@@ -372,6 +374,7 @@ export const DurationDomain = new class _DurationDomain extends Values.Aggregate
         }
     }
 }
+directory.add(DurationDomain);
 
 export interface _Interval {
     start?: _DateTime,
@@ -385,7 +388,7 @@ export interface _Interval {
  */
 export const IntervalDomain = new class _IntervalDomain extends Values.AggregateDomain<_Interval> {
     constructor() {
-        super({
+        super(`${__moduleName__}.IntervalDomain`,{
             start: DateTimeDomain,
             end: DateTimeDomain,
             duration: DurationDomain
@@ -462,16 +465,20 @@ export const IntervalDomain = new class _IntervalDomain extends Values.Aggregate
         }
     }
 }
+directory.add(IntervalDomain);
 
-export const DateRangeDomain = new Values.AggregateDomain({
+export const DateRangeDomain = new Values.AggregateDomain(`${__moduleName__}.DateRangeDomain`,{
     from: DateDomain,
     to: DateDomain
 });
+directory.add(DateRangeDomain);
+
 export type _DateRange = Introspection.getValueType<typeof DateRangeDomain>;
-export const TimeRangeDomain = new Values.AggregateDomain({
+export const TimeRangeDomain = new Values.AggregateDomain(`${__moduleName__}.TimeRangeDomain`,{
     from: TimeDomain,
     to: TimeDomain
 });
+directory.add(TimeRangeDomain);
 export type _TimeRange = Introspection.getValueType<typeof TimeRangeDomain>;
 export interface _When {
     at?: _Date,
@@ -480,7 +487,7 @@ export interface _When {
 }
 class _WhenDomain extends Values.AggregateDomain<_When> {
     constructor() {
-        super({
+        super(`${__moduleName__}.WhenDomain`,{
             at: DateDomain,
             dates: DateRangeDomain,
             times: TimeRangeDomain,
@@ -512,3 +519,4 @@ class _WhenDomain extends Values.AggregateDomain<_When> {
  */
 
 export const WhenDomain = new _WhenDomain();
+directory.add(WhenDomain);

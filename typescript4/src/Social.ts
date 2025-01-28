@@ -1,5 +1,8 @@
 import * as Introspection from 'typescript-introspection';
-import { Values } from '@pitaman71/omniglot-live-data';
+import { Definitions, Values } from '@pitaman71/omniglot-live-data';
+
+const __moduleName__ = 'omniglot-live-domains.SocialMedia'
+export const directory = new Definitions.Directory();
 
 /**
  * Enumeration of major social media channels.
@@ -101,7 +104,8 @@ class _ServiceDomain extends Introspection.Domain<Partial<Values.Parseable<void>
         return a.standard < b.standard ? -1 : a.standard > b.standard ? 1 : 0;
     }
 }
-export const ServiceDomain = new _ServiceDomain();
+export const ServiceDomain = new _ServiceDomain(`${__moduleName__}.ServiceDomain`);
+directory.add(ServiceDomain);
 
 export interface _Account {
     service?: Partial<Values.Parseable<void>> & _Service;
@@ -144,4 +148,5 @@ class _AccountDomain extends Introspection.Domain<Partial<Values.Parseable<void>
 /**
  * Handle to a social media account
  */
-export const AccountDomain = new _AccountDomain();
+export const AccountDomain = new _AccountDomain(`${__moduleName__}.AccountDomain`);
+directory.add(AccountDomain);

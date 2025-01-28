@@ -4,64 +4,76 @@
  * happen. 
  */
 import * as Introspection from 'typescript-introspection';
-import { Values } from '@pitaman71/omniglot-live-data';
+import { Definitions, Values } from '@pitaman71/omniglot-live-data';
 import { _When, WhenDomain } from './Temporal';
 
+const __moduleName__ = 'omniglot-live-domains.Logistics';
+export const directory = new Definitions.Directory();
 
 /**
  * Cartesian global coordinates in latitude, longitude format
  */
-export const GeoPointDomain = new Values.AggregateDomain({ 
+export const GeoPointDomain = new Values.AggregateDomain(`${__moduleName__}.GeoPointDomain`, { 
     lat: Values.TheNumberDomain, 
     lng: Values.TheNumberDomain
 });
+directory.add(GeoPointDomain);
 
 /**
  * Shape on the surface of the globe as a single point or cloud of points.
  */
-export const GeoShapeDomain = new Values.AggregateDomain({ 
+export const GeoShapeDomain = new Values.AggregateDomain(`${__moduleName__}.GeoShapeDomain`, { 
     point: GeoPointDomain,
-    cloud: new Values.ArrayDomain(GeoPointDomain)
+    cloud: new Values.ArrayDomain(`${__moduleName__}.GeoShapeDomain.cloud`, GeoPointDomain)
 });
+directory.add(GeoShapeDomain);
 
 /**
  * Name of a place
  */
-export const NameDomain = new Values.AggregateDomain({
+export const NameDomain = new Values.AggregateDomain(`${__moduleName__}.NameDomain`, {
     shortName: Values.TheStringDomain,
     longName: Values.TheStringDomain,
-    iso: new Values.AggregateDomain({ 
+    iso: new Values.AggregateDomain(`${__moduleName__}.NameDomain.iso`, { 
         standard: Values.TheStringDomain, 
         code: Values.TheStringDomain
     })
 }, [ 'shortName', 'longName', 'iso']);
+directory.add(NameDomain);
 
 /**
  * Physical address of a place in pseudo-international format.
  */
-export const AddressDomain = new Values.AggregateDomain({ 
+export const AddressDomain = new Values.AggregateDomain(`${__moduleName__}.AddressDomain`, { 
     addressLine1: Values.TheStringDomain,
     addressLine2: Values.TheStringDomain,
-    postalCode: Values.TheStringDomain,
+    postalCode: Values.TheStringDomain
+}, ['addressLine1', 'addressLine2', 'postalCode']);
+directory.add(AddressDomain);
+
+export const MunicipalityDomain = new Values.AggregateDomain(`${__moduleName__}.MunicipalityDomain`, { 
     city: NameDomain,
     county: NameDomain,
     state: NameDomain,
     country: NameDomain
-}, ['addressLine1', 'addressLine2', 'postalCode', 'city', 'county', 'state', 'country']);
+}, ['city', 'county', 'state', 'country']);
+directory.add(AddressDomain);
 
 export interface _Where {
     name: string,
     googlePlaceId?: string,
     address?: Introspection.getValueType<typeof AddressDomain>,
+    municipality?: Introspection.getValueType<typeof MunicipalityDomain>,
     geo?: Introspection.getValueType<typeof GeoShapeDomain>
 };
 
 class _WhereDomain extends Values.AggregateDomain<_Where> {
-    constructor() {
-        super({
+    constructor(canonicalName: string) {
+        super(canonicalName, {
             name: Values.TheStringDomain,
             googlePlaceId: Values.TheStringDomain,
             address: AddressDomain,
+            municipality: MunicipalityDomain,
             geo: GeoShapeDomain
         }, ['googlePlaceId', 'address', 'geo'])
     }
@@ -83,7 +95,8 @@ class _WhereDomain extends Values.AggregateDomain<_Where> {
     }
 }
 
-export const WhereDomain = new _WhereDomain();
+export const WhereDomain = new _WhereDomain(`${__moduleName__}.WhereDomain`);
+directory.add(WhereDomain);
 
 export interface _Radius {
     sense: 'inside'|'outside';
@@ -123,15 +136,16 @@ class _RadiusDomain extends Introspection.Domain<_Radius> {
 /**
  * Radius around a point on the earth, as measured in surface distance.
  */
-export const RadiusDomain = new _RadiusDomain();
+export const RadiusDomain = new _RadiusDomain(`${__moduleName__}.RadiusDomain`);
+directory.add(RadiusDomain);
 
 class _EventDomain extends Values.AggregateDomain<{
     where: Introspection.getValueType<typeof WhereDomain>,
     radius: Introspection.getValueType<typeof RadiusDomain>,
     when: Introspection.getValueType<typeof WhenDomain>
 }> {
-    constructor() {
-        super({
+    constructor(canonicalName: string) {
+        super(canonicalName, {
             where: WhereDomain,
             radius: RadiusDomain,
             when: WhenDomain
@@ -143,4 +157,5 @@ class _EventDomain extends Values.AggregateDomain<{
  * Something that has happened, is happening, or will happen
  * at a known time and place.
  */
-export const EventDomain = new _EventDomain();
+export const EventDomain = new _EventDomain(`${__moduleName__}.EventDomain`);
+directory.add(EventDomain);

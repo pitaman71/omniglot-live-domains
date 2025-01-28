@@ -1,6 +1,9 @@
 import * as Introspection from 'typescript-introspection'; 
-import { Values } from '@pitaman71/omniglot-live-data';
+import { Definitions, Values } from '@pitaman71/omniglot-live-data';
 import { TheNumberDomain } from '@pitaman71/omniglot-live-data/lib/Values';
+
+const __moduleName__ = 'omniglot-live-domains.Tasks'
+export const directory = new Definitions.Directory();
 
 function _cmp<T>(a: undefined|T, b: undefined|T): -1|0|1|undefined {
     if(a === undefined || b === undefined) return undefined;
@@ -27,24 +30,29 @@ export interface _Descriptor {
     nonce: string;
 };
 
-export const DescriptorDomain = new Values.AggregateDomain({
+export const DescriptorDomain = new Values.AggregateDomain(`${__moduleName__}.DescriptorDomain`, {
     session: Values.TheStringDomain,
     principal: Values.TheStringDomain,
     nonce: Values.TheStringDomain
 });
+directory.add(DescriptorDomain);
 
-export const UnitsDomain = new Values.AggregateDomain({
+export const UnitsDomain = new Values.AggregateDomain(`${__moduleName__}.UnitsDomain`, {
     expected: TheNumberDomain,
     processing: TheNumberDomain,
     completed: TheNumberDomain
 });
+directory.add(UnitsDomain);
 
-export const ProgressDomain = new Values.AggregateDomain({
+export const ProgressDomain = new Values.AggregateDomain(`${__moduleName__}.ProgressDomain`, {
     units: UnitsDomain
 });
+directory.add(ProgressDomain);
 
-export function StateDomain<ConfigType>(configDomain: Introspection.Domain<ConfigType>) {
-    return new Values.AggregateDomain({
+export function StateDomain<ConfigType>(
+    canonicalName: string, 
+    configDomain: Introspection.Domain<ConfigType>) {
+    return new Values.AggregateDomain(canonicalName, {
         config: configDomain,
         descriptor: DescriptorDomain,
         progress: ProgressDomain

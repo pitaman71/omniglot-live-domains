@@ -1,5 +1,5 @@
 
-import { Values } from '@pitaman71/omniglot-live-data';
+import { Definitions, Values } from '@pitaman71/omniglot-live-data';
 
 /**
  * Enumeration of ISO currency codes.
@@ -7,7 +7,11 @@ import { Values } from '@pitaman71/omniglot-live-data';
  * Values manually imported from:
  * https://gist.github.com/Crownie/b92805d73ed85fa50fc99a4183ba3c71#file-currencycode-enum-ts
  */
+export const directory = new Definitions.Directory();
+const __moduleName__ = 'omniglot-live-domains.Currency';
+
 export const CodesDomain = new Values.EnumerationDomain(
+  `${__moduleName__}.CodesDomain`,
   'USD',
   'CAD',
   'EUR',
@@ -128,4 +132,4 @@ export const CodesDomain = new Values.EnumerationDomain(
   'ZMK',
   'ZWL'
 );
-
+directory.add(CodesDomain);

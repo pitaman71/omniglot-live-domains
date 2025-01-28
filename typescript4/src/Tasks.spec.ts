@@ -1,27 +1,25 @@
-import * as faker from 'faker';
-
 import * as Introspection from 'typescript-introspection';
 import { Objects, Properties, Values } from '@pitaman71/omniglot-live-data';
 import { StateDomain } from './Tasks';
 
 const DirectionDomain = new Values.EnumerationDomain('unknown', 'invite', 'uninvite');
 
-export const ConfigDomain = new Values.AggregateDomain({
+export const ConfigDomain = new Values.AggregateDomain('Tasks.Config', {
     owner: Objects.BindingDomain,
     direction: DirectionDomain,
     person: Objects.BindingDomain,
     project: Objects.BindingDomain,
-    queued: new Values.ArrayDomain(Objects.BindingDomain),
-    done: new Values.ArrayDomain(Objects.BindingDomain)
+    queued: new Values.ArrayDomain('Tasks.Config.queued', Objects.BindingDomain),
+    done: new Values.ArrayDomain('Tasks.Config.done', Objects.BindingDomain)
 }, ['person', 'project', 'queued', 'done']);
 
 namespace HasState {
-    export const Domain = new Values.ParseableDomain(StateDomain(ConfigDomain));
+    export const Domain = new Values.ParseableDomain('Tasks.HasState', StateDomain(`Tasks.StateDomain<${ConfigDomain.canonicalName}>`, ConfigDomain));
     export interface BindingType extends Objects.BindingType<string> { task: Objects.Binding<string> };
     export type ValueType = Introspection.getValueType<typeof Domain>;
-    export const Descriptor = new Properties.Descriptor<BindingType, ValueType>(
+    export const Descriptor = new Properties.Descriptor(
         'Tasks.InviteAll.HasState',
-        (builder): void => {
+        builder => {
             builder.description('Property representing, for a task, the current state of that task');
             builder.symbol('task', 'a Task which has state');
             builder.scalar(Domain);
@@ -50,7 +48,7 @@ describe('HasState.asJSON.from', () => {
         "progress": {}
     };
     it('parses ConfigDomain from a string', () => {
-        const domain = new Values.ParseableDomain(ConfigDomain);
+        const domain = new Values.ParseableDomain(`Parseable<${ConfigDomain}>`, ConfigDomain);
         const asJSON = domain.asJSON();
         expect(asJSON).toBeTruthy();
         const result = asJSON.from(input.config, { onError: error => console.error(`Parsing JSON ${JSON.stringify(input.config)} causes ${JSON.stringify(error)}`) });

@@ -1,5 +1,3 @@
-import * as faker from 'faker';
-
 import { JSONValue } from 'typescript-introspection';
 import { DateDomain, DateTimeDomain, IntervalDomain, WhenDomain } from './Temporal';
 

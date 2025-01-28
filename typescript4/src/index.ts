@@ -1,7 +1,21 @@
-export * as Currency from './Currency';
-export * as Financial from './Financial';
-export * as Logistics from './Logistics';
-export * as Media from './Media';
-export * as SocialMedia from './SocialMedia';
-export * as Tasks from './Tasks';
-export * as Temporal from './Temporal';
+import { Definitions } from '@pitaman71/omniglot-live-data';
+
+import * as Currency from './Currency';
+import * as Financial from './Financial';
+import * as Logistics from './Logistics';
+import * as Media from './Media';
+import * as Social from './Social';
+import * as Tasks from './Tasks';
+import * as Temporal from './Temporal';
+
+const directory = Definitions.Directory.from(
+    Currency.directory,
+    Financial.directory,
+    Logistics.directory,
+    Media.directory,
+    Social.directory,
+    Tasks.directory,
+    Temporal.directory
+);
+
+export { Currency, Financial, Logistics, Media, Social, Tasks, Temporal, directory };
