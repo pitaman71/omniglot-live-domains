@@ -21,9 +21,9 @@ export interface _Service {
     standard?: ServiceNames
 }
 
-class _ServiceDomain extends Introspection.Domain<Partial<Values.Parseable<void>> & _Service> {
-    asString(format?: string) { 
-        return {
+class _ServiceDomain extends Introspection.Domain<_Service> {
+    asString(format?: Introspection.Format) { 
+        return format !== undefined ? undefined : {
             from(text: string) { 
                 let standard: undefined|ServiceNames = undefined;
                 let error:string|undefined = undefined;
@@ -69,7 +69,7 @@ class _ServiceDomain extends Introspection.Domain<Partial<Values.Parseable<void>
                 }
                 return { standard, text, error }
             },
-            to(value: Partial<Values.Parseable<void>> & _Service) { return typeof value.text === 'string' ? value.text : (
+            to(value: _Service) { return (
                 value.standard === ServiceNames.FACEBOOK ? 'facebook' :
                 value.standard === ServiceNames.INSTAGRAM ? 'instagram' :
                 value.standard === ServiceNames.LINKEDIN ? 'linkedin' :
@@ -81,7 +81,7 @@ class _ServiceDomain extends Introspection.Domain<Partial<Values.Parseable<void>
     }
     asEnumeration(maxCount: number) {
         return new class {
-            *forward(): Generator<Partial<Values.Parseable<void>> & _Service> {
+            *forward(): Generator<_Service> {
                 yield { standard: ServiceNames.FACEBOOK };
                 yield { standard: ServiceNames.INSTAGRAM };
                 yield { standard: ServiceNames.LINKEDIN };
@@ -89,7 +89,7 @@ class _ServiceDomain extends Introspection.Domain<Partial<Values.Parseable<void>
                 yield { standard: ServiceNames.TWITTER };
                 yield { standard: ServiceNames.WECHAT };
             }
-            *backward(): Generator<Partial<Values.Parseable<void>> & _Service> {
+            *backward(): Generator<_Service> {
                 yield { standard: ServiceNames.WECHAT };
                 yield { standard: ServiceNames.TWITTER };
                 yield { standard: ServiceNames.SNAPCHAT };
@@ -99,7 +99,7 @@ class _ServiceDomain extends Introspection.Domain<Partial<Values.Parseable<void>
             }
         }    
     }
-    cmp(a: Partial<Values.Parseable<void>> & _Service, b: Partial<Values.Parseable<void>> & _Service) {
+    cmp(a: _Service, b: _Service) {
         if(a.standard === undefined || b.standard === undefined) return undefined;
         return a.standard < b.standard ? -1 : a.standard > b.standard ? 1 : 0;
     }
@@ -108,33 +108,36 @@ export const ServiceDomain = new _ServiceDomain(`${__moduleName__}.ServiceDomain
 directory.add(ServiceDomain);
 
 export interface _Account {
-    service?: Partial<Values.Parseable<void>> & _Service;
+    service?: _Service;
     handle?: string;
 };
 
-class _AccountDomain extends Introspection.Domain<Partial<Values.Parseable<void>> & _Account> {
-    asString(format?: string) { 
-        return {
-            from(text: string) { 
-                let service: undefined|(Partial<Values.Parseable<void>> & _Service) = undefined;
+class _AccountDomain extends Introspection.Domain<_Account> {
+    asString(format?: Introspection.Format) { 
+        const asString = ServiceDomain.asString();
+        return format !== undefined ? undefined : asString === undefined ? undefined: {
+            from(text: string|null) { 
+                if(text === null) return null;
+                let service: undefined|_Service = undefined;
                 let handle:  undefined|string = undefined;
                 let error:string|undefined = undefined;
                 const match = 
                     /(\S+):\s*(\S+)/.exec(text);
 
                 if(match && match[1] && match[2]) {
-                    service = ServiceDomain.asString().from(match[1]);
+                    service = asString.from(match[1]);
                     handle = match[2].replace('^\@', match[2]);
                 }
                 return { service, handle, text, error }
             },
-            to(value: Partial<Values.Parseable<void>> & _Account) { return typeof value.text === 'string' ? value.text :
-                `${value.service === undefined ? undefined : ServiceDomain.asString().to(value.service)}: ${value.handle}`;
+            to(value: _Account|null) { 
+                if(value === null) return null;
+                return `${value.service === undefined ? undefined : asString.to(value.service)}: ${value.handle}`;
             }
         };
     }
     asEnumeration(maxCount: number) { return undefined }
-    cmp(a: Partial<Values.Parseable<void>> & _Account, b: Partial<Values.Parseable<void>> & _Account) {
+    cmp(a: _Account, b: _Account) {
         if(a.service === undefined || b.service === undefined)
             return undefined;
         let code:-1|1|0|undefined = ServiceDomain.cmp(a.service, b.service);

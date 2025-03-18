@@ -57,7 +57,9 @@ describe('Interval operators', () => {
 })
 
 describe('When.asDates.from', () => {
+    const asString = DateDomain.asString();
     it('cmp merges nonoverlapping ranges', () => {
+        if(asString === undefined) throw new Error('Financial.Temporal.DateDomain did not implement asString');
         let input: JSONValue = { from: "2024-06-20T19:30:59.734Z", to: "2024-08-06T19:30:59.734Z"};
         const a = WhenDomain.asJSON().from(input, { onError: error => console.error(`Parsing JSON ${JSON.stringify(input)} causes ${JSON.stringify(error)}`) });
         input = { from: "2024-08-08T19:30:59.734Z", to: "2024-11-22T20:30:59.734Z"};
@@ -68,7 +70,7 @@ describe('When.asDates.from', () => {
             a,
             b
         );
-        expanded?.dates?.from && expect(DateDomain.asString().to(expanded.dates.from)).toEqual("2024-06-20T19:30:59.734Z");
-        expanded?.dates?.to && expect(DateDomain.asString().to(expanded.dates.to)).toEqual("2024-11-22T20:30:59.734Z");
+        expanded?.dates?.from && expect(asString.to(expanded.dates.from)).toEqual("2024-06-20T19:30:59.734Z");
+        expanded?.dates?.to && expect(asString.to(expanded.dates.to)).toEqual("2024-11-22T20:30:59.734Z");
     });
 })

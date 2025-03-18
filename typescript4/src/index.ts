@@ -2,6 +2,7 @@ import { Definitions } from '@pitaman71/omniglot-live-data';
 
 import * as Currency from './Currency';
 import * as Financial from './Financial';
+import * as Geo from './Geo';
 import * as Logistics from './Logistics';
 import * as Media from './Media';
 import * as Social from './Social';
@@ -11,6 +12,7 @@ import * as Temporal from './Temporal';
 const directory = Definitions.Directory.from(
     Currency.directory,
     Financial.directory,
+    Geo.directory,
     Logistics.directory,
     Media.directory,
     Social.directory,
@@ -18,4 +20,4 @@ const directory = Definitions.Directory.from(
     Temporal.directory
 );
 
-export { Currency, Financial, Logistics, Media, Social, Tasks, Temporal, directory };
+export { Currency, Financial, Geo, Logistics, Media, Social, Tasks, Temporal, directory };

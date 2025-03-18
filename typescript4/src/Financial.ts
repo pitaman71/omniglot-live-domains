@@ -32,12 +32,13 @@ class _TenderDomain extends Values.AggregateDomain<_Tender> {
         }, ['currency'])
     }
     asSchema() { return { currency: Currency.CodesDomain.asSchema(), amount: AmountDomain.asSchema() } }
-    asString(format?: string) { 
-        return {
-            from(text: string): Partial<_Tender>|null { 
+    asString(format?: Introspection.Format) { 
+        return format !== undefined ? undefined : {
+            from(text: string|null): _Tender|null { 
                 let error: string|undefined;
                 let currency: CurrencyCodesType|undefined;
                 let amount: number|undefined;
+                if(text === null) return null;
                 const re1 = new RegExp(/([A-Z][A-Z][A-Z])?\s*(\d+)(\.\d+)?/);
                 const parsed1 = text.match(re1);
                 if(parsed1) {
@@ -53,7 +54,8 @@ class _TenderDomain extends Values.AggregateDomain<_Tender> {
                 if(!amount) return null;
                 return { currency, amount };
             },
-            to(value: Partial<_Tender>) { 
+            to(value: _Tender|null) { 
+                if(value === null) return null;
                 return value.currency === undefined || value.amount === undefined ? '' : `${value.currency} ${value.amount}` }
         };
     }
@@ -87,10 +89,10 @@ class _PayRangeDomain extends Values.AggregateDomain<_PayRange> {
         }, ['currency'])
     }
     asSchema() { return { currency: "string", minimum: "number", maximum: "number", standard: "string" } }
-    asString(format?: string) { 
+    asString(format?: Introspection.Format) { 
         const domain = this;
-        return {
-            from(text: string): Partial<_PayRange>|null { 
+        return format !== undefined ? undefined : {
+            from(text: string): _PayRange|null { 
                 let error: string|undefined;
                 let currency: CurrencyCodesType|undefined;
                 let minimum: number|undefined;
@@ -129,7 +131,8 @@ class _PayRangeDomain extends Values.AggregateDomain<_PayRange> {
                 if(minimum === undefined || maximum === undefined || basis === undefined) return null;
                 return { currency, minimum, maximum, basis };
             },
-            to(value: Partial<_PayRange>) { 
+            to(value: _PayRange|null) { 
+                if(value === null) return null;
                 return value.minimum === value.maximum ? `${value.currency} ${value.minimum} ${value.basis?.standard}` : `${value.currency} ${value.minimum} - ${value.maximum} ${value.basis?.standard}` }
         };
     }

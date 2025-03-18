@@ -14,7 +14,7 @@ export const ConfigDomain = new Values.AggregateDomain('Tasks.Config', {
 }, ['person', 'project', 'queued', 'done']);
 
 namespace HasState {
-    export const Domain = new Values.ParseableDomain('Tasks.HasState', StateDomain(`Tasks.StateDomain<${ConfigDomain.canonicalName}>`, ConfigDomain));
+    export const Domain = StateDomain(`Tasks.StateDomain<${ConfigDomain.canonicalName}>`, ConfigDomain);
     export interface BindingType extends Objects.BindingType<string> { task: Objects.Binding<string> };
     export type ValueType = Introspection.getValueType<typeof Domain>;
     export const Descriptor = new Properties.Descriptor(
@@ -48,26 +48,24 @@ describe('HasState.asJSON.from', () => {
         "progress": {}
     };
     it('parses ConfigDomain from a string', () => {
-        const domain = new Values.ParseableDomain(`Parseable<${ConfigDomain}>`, ConfigDomain);
+        const domain = ConfigDomain;
         const asJSON = domain.asJSON();
         expect(asJSON).toBeTruthy();
-        const result = asJSON.from(input.config, { onError: error => console.error(`Parsing JSON ${JSON.stringify(input.config)} causes ${JSON.stringify(error)}`) });
+        const result = asJSON?.from(input.config, { onError: error => console.error(`Parsing JSON ${JSON.stringify(input.config)} causes ${JSON.stringify(error)}`) });
         expect(result).toBeTruthy();
-        expect(result?.parsed).toBeTruthy();
-        expect(result?.parsed?.owner).toBeTruthy();
-        expect(result?.parsed?.direction).toBeTruthy();
-        expect(result?.parsed?.person).toBeTruthy();
-        expect(result?.parsed?.person?.objectId).toEqual("425a24ef-280a-4e62-8893-5709f1d5a1dd");
+        expect(result?.owner).toBeTruthy();
+        expect(result?.direction).toBeTruthy();
+        expect(result?.person).toBeTruthy();
+        expect(result?.person?.objectId).toEqual("425a24ef-280a-4e62-8893-5709f1d5a1dd");
     });
     it('parses StateDomain from a string', () => {
         const result = HasState.Domain.asJSON()?.from(input);
         expect(result).toBeTruthy();
-        expect(result?.parsed).toBeTruthy();
-        expect(result?.parsed?.config).toBeTruthy();
-        expect(result?.parsed?.config?.owner).toBeTruthy();
-        expect(result?.parsed?.config?.direction).toBeTruthy();
-        expect(result?.parsed?.config?.person).toBeTruthy();
-        expect(result?.parsed?.config?.person?.objectId).toEqual("425a24ef-280a-4e62-8893-5709f1d5a1dd");
+        expect(result?.config).toBeTruthy();
+        expect(result?.config?.owner).toBeTruthy();
+        expect(result?.config?.direction).toBeTruthy();
+        expect(result?.config?.person).toBeTruthy();
+        expect(result?.config?.person?.objectId).toEqual("425a24ef-280a-4e62-8893-5709f1d5a1dd");
     });
 
 })

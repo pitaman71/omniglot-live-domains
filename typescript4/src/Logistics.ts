@@ -6,27 +6,10 @@
 import * as Introspection from 'typescript-introspection';
 import { Definitions, Values } from '@pitaman71/omniglot-live-data';
 import { _When, WhenDomain } from './Temporal';
+import { PointDomain, ShapeDomain } from './Geo';
 
 const __moduleName__ = 'omniglot-live-domains.Logistics';
 export const directory = new Definitions.Directory();
-
-/**
- * Cartesian global coordinates in latitude, longitude format
- */
-export const GeoPointDomain = new Values.AggregateDomain(`${__moduleName__}.GeoPointDomain`, { 
-    lat: Values.TheNumberDomain, 
-    lng: Values.TheNumberDomain
-});
-directory.add(GeoPointDomain);
-
-/**
- * Shape on the surface of the globe as a single point or cloud of points.
- */
-export const GeoShapeDomain = new Values.AggregateDomain(`${__moduleName__}.GeoShapeDomain`, { 
-    point: GeoPointDomain,
-    cloud: new Values.ArrayDomain(`${__moduleName__}.GeoShapeDomain.cloud`, GeoPointDomain)
-});
-directory.add(GeoShapeDomain);
 
 /**
  * Name of a place
@@ -64,7 +47,7 @@ export interface _Where {
     googlePlaceId?: string,
     address?: Introspection.getValueType<typeof AddressDomain>,
     municipality?: Introspection.getValueType<typeof MunicipalityDomain>,
-    geo?: Introspection.getValueType<typeof GeoShapeDomain>
+    geo?: Introspection.getValueType<typeof ShapeDomain>
 };
 
 class _WhereDomain extends Values.AggregateDomain<_Where> {
@@ -74,20 +57,21 @@ class _WhereDomain extends Values.AggregateDomain<_Where> {
             googlePlaceId: Values.TheStringDomain,
             address: AddressDomain,
             municipality: MunicipalityDomain,
-            geo: GeoShapeDomain
+            geo: ShapeDomain
         }, ['googlePlaceId', 'address', 'geo'])
     }
     asJSON() {
         const superAsJSON = () => super.asJSON();
         return {
-            from(json: Introspection.JSONValue, options?: { onError?: (error: Introspection.Error) => void }): Partial<_Where>|null {
+            from(json: Introspection.JSONValue, options?: { onError?: (error: Introspection.Parsing.Error) => void }): _Where|null {
+                if(json === null) return null;
                 if(typeof json === 'string') {
                     return {
                         name: json
                     }
                 }
                 return superAsJSON().from(json, options);
-            }, to(value: Partial<_Where>): Introspection.JSONValue {
+            }, to(value: _Where|null): Introspection.JSONValue {
                 if(value === null) return null;
                 return superAsJSON().to(value);
             }
@@ -105,8 +89,8 @@ export interface _Radius {
 }
 
 class _RadiusDomain extends Introspection.Domain<_Radius> {
-    asString(format?: string) { 
-        return {
+    asString(format?: Introspection.Format) { 
+        return format !== undefined ? undefined : {
             from(text: string): null|_Radius { 
                 let sense:'inside'|'outside' = 'outside';
                 let miles: number|undefined;
