@@ -467,25 +467,36 @@ export const DurationDomain = new class _DurationDomain extends Values.Aggregate
             }
         } }
     cmp(a: _Duration, b:_Duration): undefined|-1|0|1 {
-        return _cmp(this.toSeconds(a), this.toSeconds(b))
+        return _cmp(this.asNumber()!.to(a), this.asNumber()!.to(b))
     }
     toLuxon(duration: _Duration): Luxon.Duration {
         return Luxon.Duration.fromObject(duration);
     }
-    toSeconds(duration: _Duration): number {
-        return (duration.seconds || 0) +
-            (duration.minutes ? 60 * duration.minutes : 0) +
-            (duration.hours ? 3600 * duration.hours : 0) + 
-            (duration.days ? 24 * 3600 * duration.days : 0);
-    }
-    fromSeconds(seconds: number) {
-        return {
-            days: Math.floor(seconds / (24 * 3600)),
+    asNumber(dimension?: Introspection.Measurements.Dimension) {
+        const domain = this;
+        if(dimension === undefined || dimension === Introspection.Measurements.COMMON_DIMENSIONS.duration) {
+            return {
+                dimension: dimension || Introspection.Measurements.COMMON_DIMENSIONS.duration,
+                to(duration: _Duration|null): number|null {
+                    if(duration === null) return null;
+                    return (duration.seconds || 0) +
+                        (duration.minutes ? 60 * duration.minutes : 0) +
+                        (duration.hours ? 3600 * duration.hours : 0) + 
+                        (duration.days ? 24 * 3600 * duration.days : 0);
+                },
+                from(seconds: number|null) {
+                    if(seconds === null) return null;
+                    return {
+                        days: Math.floor(seconds / (24 * 3600)),
 
-            hours: Math.floor(seconds / 3600) % 24,
-            minutes: Math.floor(seconds / 60) % 60,
-            seconds: Math.floor(seconds % 60)
+                        hours: Math.floor(seconds / 3600) % 24,
+                        minutes: Math.floor(seconds / 60) % 60,
+                        seconds: Math.floor(seconds % 60)
+                    }
+                }
+            }
         }
+        return undefined;
     }
 }
 directory.add(DurationDomain);
