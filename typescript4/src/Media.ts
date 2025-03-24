@@ -24,6 +24,7 @@ export interface _Asset {
  * metadata.
  */
 export const AssetDomain = new Values.AggregateDomain<_Asset>(`${__moduleName__}.AssetDomain`, {
+    error: Values.TheStringDomain,
     mime: Values.TheStringDomain,
     pixelDimensions: PixelDimensionsDomain,
     uri: Values.TheStringDomain,
