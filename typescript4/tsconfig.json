@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "target": "es2016",
-        "module": "commonjs",
+        "target": "ES2020",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
         "declaration": true,
         "outDir": "./lib",
         "strict": true,
